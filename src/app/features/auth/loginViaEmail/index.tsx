@@ -15,14 +15,19 @@ const LoginViaEmail = () => {
     handleSubmit,
     isBtnDisabled,
   } = useHook();
-  
+
   return (
     <div className="space-y-10 max-w-[500px] mx-auto mt-10">
       <div className="flex flex-col items-center gap-y-2">
-        <Text type="bold" size="4xl">
+        <Text type="bold" size="4xl" className="text-center">
           Sign in to your Account
         </Text>
-        <Text type="medium" size="lg" variant="secondary">
+        <Text
+          type="medium"
+          size="lg"
+          variant="secondary"
+          className="text-center"
+        >
           Enter your email to log in
         </Text>
       </div>
