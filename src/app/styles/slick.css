@@ -1,0 +1,50 @@
+@reference "./globals.css";
+
+.slick-dots li button:before {
+  @apply !h-0 !w-0;
+}
+.slick-dots li {
+  @apply !h-3 !w-3 !m-0 pb-3;
+}
+.slick-dots li.slick-active button:before {
+  @apply !text-brand-600;
+}
+
+.events .slick-dots li {
+  @apply h-[10px] !mx-[10px];
+}
+.events .slick-dots {
+  @apply !pt-5;
+}
+.events .slick-slide {
+  @apply md:!pr-6 mb-4;
+}
+.events .slick-dots li button:hover,
+.events .slick-dots li button:focus {
+  outline: none;
+}
+.events .slick-dots li button:hover:before,
+.events .slick-dots li button:focus:before {
+  opacity: 1;
+}
+.events .slick-dots li button:before {
+  transition: all 0.3s;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 10px !important;
+  text-align: center;
+  opacity: 0.25;
+  width: 10px !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: transparent !important;
+  background-color: gray;
+  border-radius: 30px;
+}
+.events .slick-dots li.slick-active button:before {
+  @apply bg-brand-solid !w-[30px] h-[10px] rounded-full opacity-100;
+}
+.events .slick-dots:not(:has(li.slick-active)) li:last-child button:before {
+  @apply bg-brand-solid !w-[30px] h-[10px] rounded-full opacity-100;
+}
