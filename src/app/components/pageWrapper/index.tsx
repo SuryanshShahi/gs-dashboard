@@ -30,7 +30,7 @@ const PageWrapper: FC<PropsWithChildren<IPageWraps>> = ({
       <div
         ref={ref}
         className={clsx(
-          "animate-bottom overflow-scroll relative h-full max-[1024px]:p-5 pb-5",
+          "animate-bottom overflow-scroll relative h-full",
           hideHeader
             ? "max-h-[calc(100vh-32px)]"
             : "lg:max-h-[calc(100vh-93px)] max-h-[calc(100vh-64px)]",
