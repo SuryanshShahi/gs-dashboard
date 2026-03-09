@@ -61,13 +61,13 @@ const OtpInputField = ({
                 {...props}
                 placeholder="0"
                 className={clsx(
-                  "h-[60px] rounded-xl placeholder:text-placeholder-subtle text-3xl",
+                  "sm:h-[60px] h-[50px] sm:rounded-xl rounded-lg placeholder:text-placeholder-subtle text-3xl",
                   errorMessage
                     ? "border-[1.5px] border-error"
                     : props.value
                       ? "border-[1.5px] border-brand"
                       : "border border-gray-400",
-                  prefix ? "!w-full" : "!w-[60px]",
+                  prefix ? "!w-full" : "sm:!w-[60px] !w-[50px]",
                 )}
               />
             )}
