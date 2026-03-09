@@ -17,9 +17,13 @@ const LoginViaEmail = () => {
   } = useHook();
 
   return (
-    <div className="space-y-10 max-w-[500px] w-full mx-auto mt-10 px-4 sm:px-0">
+    <div className="space-y-10 max-w-[500px] w-full mx-auto mt-10">
       <div className="flex flex-col items-center gap-y-2">
-        <Text type="bold" size="4xl" className="text-center sm:text-4xl text-2xl">
+        <Text
+          type="bold"
+          size="4xl"
+          className="text-center sm:text-4xl text-2xl"
+        >
           Sign in to your Account
         </Text>
         <Text

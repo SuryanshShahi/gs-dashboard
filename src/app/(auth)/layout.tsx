@@ -66,8 +66,8 @@ export default function RootLayout({
   ].filter((r) => r !== undefined);
 
   return (
-    <div className="grid lg:grid-cols-2 h-screen max-[1024px]:place-items-center">
-      <div className="flex flex-col gap-y-8 justify-between sm:p-8 p-5 h-full w-full">
+    <div className="grid lg:grid-cols-2 min-h-dvh max-[1024px]:place-items-center">
+      <div className="flex flex-col gap-y-8 justify-between sm:p-8 p-5 min-h-dvh lg:min-h-full w-full">
         <Img
           src="/assets/icons/logo.png"
           height={45}

@@ -21,10 +21,10 @@ const TextWithLinks = ({
   className?: string;
 }) => {
   return (
-    <div className={clsx("flex flex-wrap w-max", className)}>
+    <div className={clsx("flex flex-wrap justify-center", className)}>
       <Text
         type={textProps?.type || "medium"}
-        className={clsx("text-nowrap", textProps?.className)}
+        className={clsx(textProps?.className)}
         {...textProps}
       >
         {text}

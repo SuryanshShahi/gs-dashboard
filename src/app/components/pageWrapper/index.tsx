@@ -34,7 +34,7 @@ const PageWrapper: FC<PropsWithChildren<IPageWraps>> = ({
           hideHeader
             ? "max-h-[calc(100vh-32px)]"
             : "lg:max-h-[calc(100vh-93px)] max-h-[calc(100vh-64px)]",
-          wrapperClass
+          wrapperClass,
         )}
       >
         {children}
