@@ -17,7 +17,7 @@ const Header = ({ breadCrumbs }: { breadCrumbs?: IBreadCrumbs[] }) => {
       label: extractText(e),
     }));
   return (
-    <div className="lg:flex hidden items-center gap-x-2 py-5 sticky top-0">
+    <div className="lg:flex hidden items-center gap-x-2 pb-4 sticky top-0">
       {/* <SvgHome
         stroke={tw?.textColor["secondary"]}
         className="cursor-pointer"

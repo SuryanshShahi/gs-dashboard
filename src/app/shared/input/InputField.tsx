@@ -1,12 +1,13 @@
 import clsx from "clsx";
 import { InputHTMLAttributes, ReactNode } from "react";
 import { FiAlertCircle } from "react-icons/fi";
-interface IInputField extends InputHTMLAttributes<HTMLInputElement> {
+export interface IInputField extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   className?: string;
   wrapperClass?: string;
   icon?: ReactNode;
   errorMessage?: string;
+  secondaryIcon?: ReactNode;
 }
 const InputField = ({
   label,
@@ -14,22 +15,27 @@ const InputField = ({
   wrapperClass,
   errorMessage,
   icon,
+  secondaryIcon,
   ...rest
 }: IInputField) => {
   return (
     <div className={clsx("flex flex-col gap-y-1", wrapperClass)}>
       {label && <label className="text-secondary text-sm">{label}</label>}
       <div className="relative">
+        {icon && <div className="absolute left-3 top-[14px]">{icon}</div>}
         <input
           className={clsx(
             "h-11 rounded-lg border p-3 outline-none",
-            icon && "pr-10",
+            icon && "pl-9",
+            secondaryIcon && "pr-9",
             errorMessage ? "border-red-500" : "border-gray-100",
             className,
           )}
           {...rest}
         />
-        <div className="absolute right-3 top-3">{icon}</div>
+        {secondaryIcon && (
+          <div className="absolute right-3 top-[14px]">{secondaryIcon}</div>
+        )}
         {errorMessage && (
           <FiAlertCircle className="w-4 h-4 text-red-500 absolute right-3 top-[14px]" />
         )}

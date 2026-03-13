@@ -30,9 +30,8 @@
   --color-brand-900: var(--brand-900);
   --color-brand-950: var(--brand-950);
   --color-primary: var(--brand-600);
-  --color-secondary: #6B7280;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-secondary: #6b7280;
+  --font-sans: var(--font-manrope);
 }
 
 @media (prefers-color-scheme: dark) {

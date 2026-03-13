@@ -1,3 +1,11 @@
+import { FaRegFolderOpen } from "react-icons/fa";
+import { FaCircleCheck } from "react-icons/fa6";
+import { FiHeadphones } from "react-icons/fi";
+import { LuLayoutGrid, LuSettings } from "react-icons/lu";
+import { PiUsersBold } from "react-icons/pi";
+import { RiShieldStarLine } from "react-icons/ri";
+import React from "react";
+
 export const authSliderData = [
   {
     image: "/assets/banner1.png",
@@ -29,4 +37,108 @@ export const Regex = {
   AT_LEAST_ONE_NUMBER: /^(?=.*\d)/,
   AT_LEAST_ONE_SPECIAL_CHAR: /^(?=.*[#?!@$%^&*-]).*$/,
   ALPHANUMERIC: /^[a-zA-Z0-9]+$/,
+};
+
+export interface DrawerMenuItem {
+  title: string;
+  icon: (color?: string) => React.ReactElement;
+  key: string;
+  disabled: boolean;
+  menuItems?: DrawerMenuItem[];
+}
+
+export const drawerMenuItems = (): Record<string, DrawerMenuItem[]> => {
+  const iconColor = "var(--secondary)";
+  return {
+    "main-menu": [
+      {
+        title: "Overview",
+        icon: (color?: string) => (
+          <LuLayoutGrid height={24} width={24} color={color || iconColor} />
+        ),
+        key: "overview",
+        disabled: false,
+      },
+      {
+        title: "Partners",
+        icon: (color?: string) => (
+          <RiShieldStarLine height={24} width={24} color={color || iconColor} />
+        ),
+        key: "partners",
+        disabled: false,
+      },
+      {
+        title: "Master Data",
+        icon: (color?: string) => (
+          <FaRegFolderOpen height={24} width={24} color={color || iconColor} />
+        ),
+        key: "master-data",
+        disabled: false,
+        menuItems: [
+          {
+            title: "Countries",
+            icon: (color?: string) => (
+              <FaCircleCheck
+                height={24}
+                width={24}
+                color={color || iconColor}
+              />
+            ),
+            key: "countries",
+            disabled: false,
+          },
+          {
+            title: "Universities",
+            icon: (color?: string) => (
+              <FaCircleCheck
+                height={24}
+                width={24}
+                color={color || iconColor}
+              />
+            ),
+            key: "universities",
+            disabled: false,
+          },
+          {
+            title: "Programs",
+            icon: (color?: string) => (
+              <FaCircleCheck
+                height={24}
+                width={24}
+                color={color || iconColor}
+              />
+            ),
+            key: "programs",
+            disabled: false,
+          },
+        ],
+      },
+      {
+        title: "Teams",
+        icon: (color?: string) => (
+          <PiUsersBold height={24} width={24} color={color || iconColor} />
+        ),
+        key: "teams",
+        disabled: false,
+      },
+    ],
+    support: [
+      {
+        title: "Help",
+        icon: (color?: string) => (
+          <FiHeadphones height={24} width={24} color={color || iconColor} />
+        ),
+        key: "help",
+        disabled: false,
+      },
+      {
+        title: "Settings",
+        icon: (color?: string) => (
+          <LuSettings height={24} width={24} color={color || iconColor} />
+        ),
+        key: "settings",
+        disabled: false,
+      },
+    ],
+  };
 };

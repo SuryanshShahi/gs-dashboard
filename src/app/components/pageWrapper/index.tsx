@@ -24,16 +24,13 @@ const PageWrapper: FC<PropsWithChildren<IPageWraps>> = ({
   const { ref } = useScrollHeight();
 
   return (
-    <main className="h-full">
+    <main className="flex flex-col h-full min-h-0">
       {!hideHeader && <Header breadCrumbs={breadCrumbs} />}
       <ToastContainer stacked />
       <div
         ref={ref}
         className={clsx(
-          "animate-bottom overflow-scroll relative h-full",
-          hideHeader
-            ? "max-h-[calc(100vh-32px)]"
-            : "lg:max-h-[calc(100vh-93px)] max-h-[calc(100vh-64px)]",
+          "animate-bottom overflow-hidden relative flex flex-col flex-1 min-h-0",
           wrapperClass,
         )}
       >
