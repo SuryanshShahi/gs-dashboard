@@ -6,6 +6,7 @@ import {
   LuClipboardList,
   LuFileText,
   LuLandmark,
+  LuUser,
   LuUserPlus,
 } from "react-icons/lu";
 import { usePathname, useRouter } from "next/navigation";
@@ -53,6 +54,20 @@ const onboardingSteps = {
       path: "/onboarding/team/emergency-contact",
     },
   ],
+  student: [
+    {
+      title: "Personal Details",
+      description: "Create your account or log in to start.",
+      icon: LuClipboardList,
+      path: "/onboarding/student/personal-details",
+    },
+    {
+      title: "Passport Details & Counsellor",
+      description: "Upload your passport details and assign a counsellor.",
+      icon: LuUser,
+      path: "/onboarding/student/passport-details",
+    },
+  ],
 };
 export default function OnboardingLayout({
   children,
@@ -82,7 +97,9 @@ export default function OnboardingLayout({
   };
 
   const handleCancel = () => {
-    router.push("/overview");
+    if (type === "student") router.push("/students");
+    else if (type === "team") router.push("/teams");
+    else router.push("/partners");
   };
 
   return (
@@ -101,7 +118,9 @@ export default function OnboardingLayout({
             children:
               type === "team"
                 ? "Onboard New Team Member"
-                : "Onboard New Partner",
+                : type === "student"
+                  ? "Add New Student"
+                  : "Onboard New Partner",
             variant: "white",
             size: "2xl",
           }}
@@ -109,7 +128,9 @@ export default function OnboardingLayout({
             children:
               type === "team"
                 ? "Get started and onboard your new team member"
-                : "Get started and onboard your new partner agency",
+                : type === "student"
+                  ? "Get started and add your new student"
+                  : "Get started and onboard your new partner agency",
             variant: "text-neutral-100",
             size: "sm",
           }}

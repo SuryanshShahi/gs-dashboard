@@ -6,6 +6,7 @@ import Dropdown from "@/shared/input/Dropdown";
 import InputField from "@/shared/input/InputField";
 import UploadFile from "@/shared/input/UploadFile";
 import { FiInfo, FiUpload } from "react-icons/fi";
+import InputWithUpload from "@/shared/input/InputWithUpload";
 
 const Page = () => {
   const inputFields = [
@@ -106,27 +107,9 @@ const Page = () => {
               {section.fields.map(({ className, type, ...item }) => (
                 <div key={item.name} className={className}>
                   {type === "inputWithUpload" ? (
-                    <div className="flex flex-col gap-y-1">
-                      <label className="text-sm">{item.label}</label>
-                      <div className="flex items-center">
-                        <InputField
-                          className="w-full flex-1 !rounded-r-none"
-                          placeholder={item.placeholder}
-                          name={item.name}
-                        />
-                        <Button
-                          variant="tertiary-color-link"
-                          size="sm"
-                          btnName="Upload"
-                          className="!rounded-l-none !border-brand-100 !bg-brand-50"
-                          icon={<FiUpload className="w-4 h-4" />}
-                          secondaryIcon={
-                            <FiInfo className="w-4 h-4 order-last ml-2" />
-                          }
-                          iconFirst
-                        />
-                      </div>
-                    </div>
+                    <InputWithUpload
+                      inputProps={{ ...item, label: undefined }}
+                    />
                   ) : type === "select" ? (
                     <Dropdown className="w-full" {...item} />
                   ) : type === "file" ? (
