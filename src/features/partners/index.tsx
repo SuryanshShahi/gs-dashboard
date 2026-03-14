@@ -10,11 +10,12 @@ import { FiPlus, FiSearch } from "react-icons/fi";
 import { LuFilter } from "react-icons/lu";
 import { partnerColumns } from "./columns";
 import { partnersData } from "./mockData";
+import { useRouter } from "next/navigation";
 
 
 const Partners = () => {
   const [search, setSearch] = useState("");
-
+  const router = useRouter();
   const filteredData = partnersData.filter(
     (p) =>
       p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -68,6 +69,7 @@ const Partners = () => {
           <Button
             variant="primary"
             size="sm"
+            onClick={() => router.push("/onboarding/overview")}
             btnName="Onboard New Partner"
             icon={<FiPlus className="w-4 h-4" />}
             iconFirst
