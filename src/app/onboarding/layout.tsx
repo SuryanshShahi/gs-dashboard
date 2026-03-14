@@ -12,33 +12,48 @@ import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
 import InfoCluster from "@/shared/InfoCluster";
 
-const steps = [
-  {
-    title: "Overview",
-    description: "Create your account or log in to start.",
-    icon: LuClipboardList,
-    path: "/onboarding/overview",
-  },
-  {
-    title: "Contracts & Documents",
-    description: "Verify your email with the code sent to your inbox.",
-    icon: LuFileText,
-    path: "/onboarding/contract-document",
-  },
-  {
-    title: "Bank Details",
-    description: "Verify your email with the code sent to your inbox.",
-    icon: LuLandmark,
-    path: "/onboarding/bank-details",
-  },
-  {
-    title: "Account Admin",
-    description: "Securely complete your payment to activate the plan.",
-    icon: LuUserPlus,
-    path: "/onboarding/account-admin",
-  },
-];
-
+const onboardingSteps = {
+  partner: [
+    {
+      title: "Overview",
+      description: "Create your account or log in to start.",
+      icon: LuClipboardList,
+      path: "/onboarding/partner/overview",
+    },
+    {
+      title: "Contracts & Documents",
+      description: "Verify your email with the code sent to your inbox.",
+      icon: LuFileText,
+      path: "/onboarding/partner/contract-document",
+    },
+    {
+      title: "Bank Details",
+      description: "Verify your email with the code sent to your inbox.",
+      icon: LuLandmark,
+      path: "/onboarding/partner/bank-details",
+    },
+    {
+      title: "Account Admin",
+      description: "Securely complete your payment to activate the plan.",
+      icon: LuUserPlus,
+      path: "/onboarding/partner/account-admin",
+    },
+  ],
+  team: [
+    {
+      title: "Personal Details",
+      description: "Create your account or log in to start.",
+      icon: LuClipboardList,
+      path: "/onboarding/team/personal-details",
+    },
+    {
+      title: "Documents & Emergency Contact",
+      description: "Verify your email with the code sent to your inbox.",
+      icon: LuFileText,
+      path: "/onboarding/team/emergency-contact",
+    },
+  ],
+};
 export default function OnboardingLayout({
   children,
 }: Readonly<{
@@ -46,6 +61,8 @@ export default function OnboardingLayout({
 }>) {
   const router = useRouter();
   const pathname = usePathname();
+  const type = pathname.split("/")[2] as keyof typeof onboardingSteps;
+  const steps = onboardingSteps[type] ?? onboardingSteps.partner;
   const activeStep = steps.findIndex((step) => pathname === step.path);
   const isFirstStep = activeStep <= 0;
   const isLastStep = activeStep === steps.length - 1;
@@ -65,7 +82,7 @@ export default function OnboardingLayout({
   };
 
   const handleCancel = () => {
-    router.push("/");
+    router.push("/overview");
   };
 
   return (
@@ -81,12 +98,18 @@ export default function OnboardingLayout({
         />
         <InfoCluster
           titleProps={{
-            children: "Onboard New Partner",
+            children:
+              type === "team"
+                ? "Onboard New Team Member"
+                : "Onboard New Partner",
             variant: "white",
             size: "2xl",
           }}
           descriptionProps={{
-            children: "Get started and onboard your new partner agency",
+            children:
+              type === "team"
+                ? "Get started and onboard your new team member"
+                : "Get started and onboard your new partner agency",
             variant: "text-neutral-100",
             size: "sm",
           }}
@@ -190,8 +213,8 @@ export default function OnboardingLayout({
             <Button
               variant="primary"
               size="md"
-              btnName={isLastStep ? "Submit" : "Next"}
-              icon={<FiArrowRight className="w-4 h-4" />}
+              btnName={isLastStep ? "Finish" : "Next"}
+              icon={isLastStep ? null : <FiArrowRight className="w-4 h-4" />}
               onClick={handleNext}
             />
           </div>

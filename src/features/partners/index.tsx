@@ -11,7 +11,10 @@ import { LuFilter } from "react-icons/lu";
 import { partnerColumns } from "./columns";
 import { partnersData } from "./mockData";
 import { useRouter } from "next/navigation";
-
+import CardWrapper from "@/shared/cards/CardWrapper";
+import InfoCluster from "@/shared/InfoCluster";
+import Text from "@/shared/heading/Text";
+import Chip from "@/shared/Chip";
 
 const Partners = () => {
   const [search, setSearch] = useState("");
@@ -22,6 +25,60 @@ const Partners = () => {
       p.id.toLowerCase().includes(search.toLowerCase()),
   );
 
+  const tabData = [
+    {
+      name: "Table View",
+      count: filteredData.length,
+      reactIcon: <BsTable className="w-4 h-4" />,
+      component: (
+        <DataTable
+          columns={partnerColumns}
+          data={filteredData}
+          enableSelection
+          totalResults={100}
+          className="flex-1 min-h-0"
+        />
+      ),
+    },
+    {
+      name: "Grid View",
+      count: filteredData.length,
+      reactIcon: <BsGrid className="w-4 h-4" />,
+      component: (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array(10)
+            .fill(null)
+            .map((_, idx) => (
+              <CardWrapper
+                key={idx}
+                className="!px-[10px] !py-2 rounded-xl space-y-2"
+              >
+                <InfoCluster
+                  showInitials
+                  children={
+                    <Chip
+                      title="24 Pending"
+                      variant="orange"
+                      size="xs"
+                      className="order-last !rounded-full ml-auto -mt-[18px]"
+                    />
+                  }
+                  textWrapperClass="!space-y-0"
+                  titleProps={{ children: "EduNext" }}
+                  descriptionProps={{
+                    children: "New Delhi, India",
+                    size: "xs",
+                  }}
+                />
+                <Text variant="tertiary" size="xxs">
+                  9999 Counsellors • 9999 Active Students • 9999 Active Courses
+                </Text>
+              </CardWrapper>
+            ))}
+        </div>
+      ),
+    },
+  ];
   return (
     <div className="flex flex-col gap-6 h-full">
       <PageHeader
@@ -33,32 +90,16 @@ const Partners = () => {
         }}
       />
 
-      {/* Action Bar */}
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <TabBar
-          tabs={[
-            {
-              name: "Table View",
-              count: filteredData.length,
-              reactIcon: <BsTable className="w-4 h-4" />,
-            },
-            {
-              name: "Grid View",
-              count: filteredData.length,
-              reactIcon: <BsGrid className="w-4 h-4" />,
-            },
-          ]}
-        />
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <InputField
-              type="text"
-              placeholder="Search"
-              value={search}
-              icon={<FiSearch className="text-gray-400" size={16} />}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
+      <div className="relative flex-1 min-h-0 flex flex-col">
+        <TabBar tabs={tabData} className="flex-1 min-h-0" />
+        <div className="flex items-center gap-3 absolute right-0 top-0">
+          <InputField
+            type="text"
+            placeholder="Search"
+            value={search}
+            icon={<FiSearch className="text-gray-400" size={16} />}
+            onChange={(e) => setSearch(e.target.value)}
+          />
           <Button
             variant="secondary"
             size="sm"
@@ -69,22 +110,13 @@ const Partners = () => {
           <Button
             variant="primary"
             size="sm"
-            onClick={() => router.push("/onboarding/overview")}
+            onClick={() => router.push("/onboarding/partner/overview")}
             btnName="Onboard New Partner"
             icon={<FiPlus className="w-4 h-4" />}
             iconFirst
           />
         </div>
       </div>
-
-      {/* Table */}
-      <DataTable
-        columns={partnerColumns}
-        data={filteredData}
-        enableSelection
-        totalResults={100}
-        className="flex-1 min-h-0"
-      />
     </div>
   );
 };

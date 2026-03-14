@@ -24,7 +24,7 @@ const InfoCluster: FC<
   return (
     <div className={clsx("flex items-center gap-3", className)}>
       {showInitials && (
-        <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shrink-0">
+        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shrink-0">
           {image ? (
             <Img
               src={image}

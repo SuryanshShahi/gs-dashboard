@@ -9,7 +9,7 @@ const Page = () => {
       name: "gstin",
       placeholder: "Enter GSTIN",
       required: true,
-      half: true,
+      className: "col-span-1",
       type: "text",
     },
     {
@@ -17,13 +17,14 @@ const Page = () => {
       name: "pan",
       placeholder: "Enter PAN",
       required: true,
-      half: true,
+      className: "col-span-1",
       type: "text",
     },
     {
       label: "Service Agreement",
       name: "serviceAgreement",
       required: true,
+      className: "col-span-2",
       type: "file",
     },
     {
@@ -31,6 +32,7 @@ const Page = () => {
       name: "nonDisclosureAgreement",
       subText: "Format: PDF • Max Size: 10MB",
       required: true,
+      className: "col-span-2",
       type: "file",
     },
     {
@@ -38,6 +40,7 @@ const Page = () => {
       name: "commissionStructure",
       subText: "Format: PDF • Max Size: 10MB",
       required: true,
+      className: "col-span-2",
       type: "file",
     },
   ];
@@ -57,8 +60,8 @@ const Page = () => {
         }}
       />
       <div className="grid grid-cols-2 gap-x-4 gap-y-5 mt-8">
-        {inputFields.map(({ half, ...item }) => (
-          <div key={item.name} className={half ? "col-span-1" : "col-span-2"}>
+        {inputFields.map(({ className, ...item }) => (
+          <div key={item.name} className={className}>
             {item.type === "file" ? (
               <UploadFile {...item} />
             ) : (

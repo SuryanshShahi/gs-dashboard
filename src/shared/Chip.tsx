@@ -50,7 +50,7 @@ const Chip = ({
       role="button"
       className={clsx(
         onClick && "cursor-pointer",
-        "border text-nowrap w-max h-max gap-x-[6px] flex items-center capitalize rounded-[6px] font-medium",
+        "border text-nowrap w-max h-max gap-x-[6px] flex items-center capitalize rounded-full font-medium",
         outlined
           ? "border-primary bg-primary text-gray-700 shadow-xs"
           : {

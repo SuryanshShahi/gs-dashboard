@@ -5,6 +5,7 @@
   --background: #ffffff;
   --foreground: #171717;
   --brand-50: #ebf9ff;
+  --brand-100: #d6f0ff;
   --brand-200: #a3e2ff;
   --brand-300: #6bd0ff;
   --brand-400: #1ab6ff;
@@ -20,6 +21,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
   --color-brand-200: var(--brand-200);
   --color-brand-300: var(--brand-300);
   --color-brand-400: var(--brand-400);

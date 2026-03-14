@@ -10,6 +10,7 @@ const Page = () => {
       name: "companyName",
       placeholder: "Enter the partner company name",
       required: true,
+      className: "col-span-2",
       type: "text",
     },
     {
@@ -18,12 +19,13 @@ const Page = () => {
       placeholder: "Enter the company's registered name",
       type: "text",
       required: true,
+      className: "col-span-2",
     },
     {
       label: "Company Type",
       name: "companyType",
       placeholder: "Select Type",
-      half: true,
+      className: "col-span-1",
       type: "select",
       options: [
         { label: "Company", value: "company" },
@@ -34,7 +36,7 @@ const Page = () => {
       label: "Website",
       name: "website",
       placeholder: "Enter website URL",
-      half: true,
+      className: "col-span-1",
       type: "text",
     },
     {
@@ -42,7 +44,7 @@ const Page = () => {
       name: "phoneNumber",
       placeholder: "Enter phone",
       required: true,
-      half: true,
+      className: "col-span-1",
       type: "tel",
     },
     {
@@ -51,13 +53,14 @@ const Page = () => {
       placeholder: "Enter email address",
       type: "email",
       required: true,
-      half: true,
+      className: "col-span-1",
     },
     {
       label: "Company Address",
       name: "companyAddress",
       placeholder: "Search address",
       required: true,
+      className: "col-span-2",
       type: "text",
     },
     {
@@ -65,7 +68,7 @@ const Page = () => {
       name: "country",
       placeholder: "Select country",
       required: true,
-      half: true,
+      className: "col-span-1",
       type: "select",
       options: [
         { label: "United States", value: "united_states" },
@@ -81,7 +84,7 @@ const Page = () => {
       name: "state",
       placeholder: "Enter state",
       required: true,
-      half: true,
+      className: "col-span-1",
       type: "select",
       options: [
         { label: "California", value: "california" },
@@ -95,7 +98,7 @@ const Page = () => {
       name: "city",
       placeholder: "Enter city",
       required: true,
-      half: true,
+      className: "col-span-1",
       type: "select",
       options: [
         { label: "New York", value: "new_york" },
@@ -108,7 +111,7 @@ const Page = () => {
       name: "pincode",
       placeholder: "Enter pincode",
       required: true,
-      half: true,
+      className: "col-span-1",
       type: "number",
     },
     {
@@ -116,6 +119,7 @@ const Page = () => {
       subText: "Format: JPEG or PNG • Max Size: 10MB • Min Res: 500px X 500px",
       name: "companyLogo",
       required: true,
+      className: "col-span-2",
       type: "file",
     },
     {
@@ -123,6 +127,7 @@ const Page = () => {
       subText: "Format: JPEG or PNG • Max Size: 10MB • Min Res: 500px X 500px",
       name: "companyLogoSquare",
       required: true,
+      className: "col-span-2",
       type: "file",
     },
   ];
@@ -142,8 +147,8 @@ const Page = () => {
         }}
       />
       <div className="grid grid-cols-2 gap-x-4 gap-y-5 mt-8">
-        {inputFields.map(({ half, ...item }) => (
-          <div key={item.name} className={half ? "col-span-1" : "col-span-2"}>
+        {inputFields.map(({ className, ...item }) => (
+          <div key={item.name} className={className}>
             {item.type === "select" ? (
               <Dropdown className="w-full" {...item} />
             ) : item.type === "file" ? (

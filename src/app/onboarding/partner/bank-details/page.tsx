@@ -9,7 +9,7 @@ const Page = () => {
       name: "country",
       placeholder: "Select Country",
       required: true,
-      half: true,
+      className: "col-span-1",
       type: "select",
       options: [
         { label: "United States", value: "united_states" },
@@ -25,7 +25,7 @@ const Page = () => {
       name: "bankName",
       placeholder: "Enter Bank Name",
       required: true,
-      half: true,
+      className: "col-span-1",
       type: "text",
     },
     {
@@ -33,7 +33,7 @@ const Page = () => {
       name: "accountNumber",
       placeholder: "Enter Account Number",
       required: true,
-      half: true,
+      className: "col-span-1",
       type: "number",
     },
     {
@@ -41,7 +41,7 @@ const Page = () => {
       name: "ifscCode",
       placeholder: "Enter IFSC Code",
       required: true,
-      half: true,
+      className: "col-span-1",
       type: "text",
     },
     {
@@ -49,7 +49,7 @@ const Page = () => {
       name: "swiftBicCode",
       placeholder: "Enter SWIFT/BIC Code",
       required: true,
-      half: true,
+      className: "col-span-1",
       type: "text",
     },
     {
@@ -57,7 +57,7 @@ const Page = () => {
       name: "sortCode",
       placeholder: "Enter Sort Code",
       required: true,
-      half: true,
+      className: "col-span-1",
       type: "number",
     },
   ];
@@ -77,8 +77,8 @@ const Page = () => {
         }}
       />
       <div className="grid grid-cols-2 gap-x-4 gap-y-5 mt-8">
-        {inputFields.map(({ half, ...item }) => (
-          <div key={item.name} className={half ? "col-span-1" : "col-span-2"}>
+        {inputFields.map(({ className, ...item }) => (
+          <div key={item.name} className={className}>
             {item.type === "file" ? (
               <UploadFile {...item} />
             ) : (

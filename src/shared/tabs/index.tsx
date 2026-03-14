@@ -35,10 +35,10 @@ const TabBar: FC<PropsWithChildren<ITabBar>> = ({
     (e) => e?.name?.toLowerCase() === activeTab,
   )?.component;
   return (
-    <div className={clsx(`space-y-6`, className)}>
-      <div className="relative">
+    <div className={clsx("flex flex-col gap-6 min-h-0", className)}>
+      <div className="relative shrink-0">
         <div
-          className={clsx("flex overflow-x-scroll", {
+          className={clsx("flex overflow-x-scroll w-max", {
             "gap-x-1 rounded-[10px] bg-gray-50 p-1": variant === "button",
             "gap-x-4": variant === "link",
           })}

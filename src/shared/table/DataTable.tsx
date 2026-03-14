@@ -59,73 +59,67 @@ export default function DataTable<TData>({
 
   return (
     <div className={clsx("flex flex-col min-h-0", className)}>
-      <div className="border border-gray-200 rounded-xl flex flex-col min-h-0 flex-1 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="sticky top-0 z-10">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr
-                  key={headerGroup.id}
-                  className="border-b border-gray-200 bg-gray-50"
-                >
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      className={clsx(
-                        "px-4 py-3 text-left text-xs font-medium text-gray-500 whitespace-nowrap",
-                        header.column.getCanSort() &&
-                          "cursor-pointer select-none",
+      <div className="border border-gray-200 rounded-xl flex-1 min-h-0 overflow-auto">
+        <table className="w-full text-sm">
+          <thead className="sticky top-0 z-10">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr
+                key={headerGroup.id}
+                className="border-b border-gray-200 bg-gray-50"
+              >
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    className={clsx(
+                      "px-4 py-3 text-left text-xs font-medium text-gray-500 whitespace-nowrap",
+                      header.column.getCanSort() &&
+                        "cursor-pointer select-none",
+                    )}
+                    onClick={header.column.getToggleSortingHandler()}
+                    style={{
+                      width:
+                        header.getSize() !== 150
+                          ? header.getSize()
+                          : undefined,
+                    }}
+                  >
+                    <div className="flex items-center gap-1">
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                      {header.column.getCanSort() && (
+                        <LuChevronsUpDown className="w-3.5 h-3.5 text-gray-400" />
                       )}
-                      onClick={header.column.getToggleSortingHandler()}
-                      style={{
-                        width:
-                          header.getSize() !== 150
-                            ? header.getSize()
-                            : undefined,
-                      }}
-                    >
-                      <div className="flex items-center gap-1">
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                        {header.column.getCanSort() && (
-                          <LuChevronsUpDown className="w-3.5 h-3.5 text-gray-400" />
-                        )}
-                      </div>
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-          </table>
-        </div>
-        <div className="overflow-y-auto flex-1 min-h-0">
-          <table className="w-full text-sm">
-            <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className={clsx(
-                    "border-b border-gray-100 last:border-b-0 hover:bg-gray-50/50 transition-colors",
-                    row.getIsSelected() && "bg-brand-50/30",
-                  )}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-4 py-3 whitespace-nowrap">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr
+                key={row.id}
+                className={clsx(
+                  "border-b border-gray-100 last:border-b-0 hover:bg-gray-50/50 transition-colors",
+                  row.getIsSelected() && "bg-brand-50/30",
+                )}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="px-4 py-3 whitespace-nowrap">
+                    {flexRender(
+                      cell.column.columnDef.cell,
+                      cell.getContext(),
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {/* Pagination */}
