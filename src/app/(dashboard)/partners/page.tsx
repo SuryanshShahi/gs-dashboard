@@ -1,10 +1,13 @@
-import PageWrapper from "@/app/components/pageWrapper";
-import Partners from "@/app/features/partners";
+import PageWrapper from "@/components/pageWrapper";
+import Partners from "@/features/partners";
+import { Suspense } from "react";
 
 const Page = () => {
   return (
     <PageWrapper>
-      <Partners />
+      <Suspense>
+        <Partners />
+      </Suspense>
     </PageWrapper>
   );
 };

@@ -1,5 +1,5 @@
-import PageWrapper from "@/app/components/pageWrapper";
-import Settings from "@/app/features/settings";
+import PageWrapper from "@/components/pageWrapper";
+import Settings from "@/features/settings";
 
 const Page = () => {
   return (

@@ -6,9 +6,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useContext, useState } from "react";
 import { HiOutlineMenuAlt1 } from "react-icons/hi";
-import SideBar from "../components/sideBar";
-import Text from "../shared/heading/Text";
-import Img from "../shared/Img";
+import SideBar from "@/components/sideBar";
+import Text from "@/shared/heading/Text";
+import Img from "@/shared/Img";
 
 export default function RootLayout({
   children,

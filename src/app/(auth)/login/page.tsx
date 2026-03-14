@@ -1,5 +1,5 @@
-import PageWrapper from "@/app/components/pageWrapper";
-import LoginViaEmail from "@/app/features/auth/loginViaEmail";
+import PageWrapper from "@/components/pageWrapper";
+import LoginViaEmail from "@/features/auth/loginViaEmail";
 
 const Page = () => {
   return (

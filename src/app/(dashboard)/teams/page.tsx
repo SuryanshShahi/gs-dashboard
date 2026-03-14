@@ -1,5 +1,5 @@
-import PageWrapper from "@/app/components/pageWrapper";
-import Teams from "@/app/features/teams";
+import PageWrapper from "@/components/pageWrapper";
+import Teams from "@/features/teams";
 
 const Page = () => {
   return (

@@ -3,7 +3,7 @@ import { FaCircleCheck } from "react-icons/fa6";
 import { FiHeadphones } from "react-icons/fi";
 import { LuLayoutGrid, LuSettings } from "react-icons/lu";
 import { PiUsersBold } from "react-icons/pi";
-import { RiShieldStarLine } from "react-icons/ri";
+import { RiFolderUserLine, RiShieldStarLine } from "react-icons/ri";
 import React from "react";
 
 export const authSliderData = [
@@ -65,6 +65,14 @@ export const drawerMenuItems = (): Record<string, DrawerMenuItem[]> => {
           <RiShieldStarLine height={24} width={24} color={color || iconColor} />
         ),
         key: "partners",
+        disabled: false,
+      },
+      {
+        title: "Students",
+        icon: (color?: string) => (
+          <RiFolderUserLine height={24} width={24} color={color || iconColor} />
+        ),
+        key: "students",
         disabled: false,
       },
       {

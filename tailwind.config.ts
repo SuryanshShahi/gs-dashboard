@@ -2,7 +2,7 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: [
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -24,10 +24,7 @@ const config: Config = {
       animation: {
         bottom: "bottom 0.5s",
       },
-      backgroundImage: {
-        bannerOverlay:
-          "linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, #000 110%)",
-      },
+      backgroundImage: {},
     },
   },
   plugins: [],

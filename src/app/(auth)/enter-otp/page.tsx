@@ -1,5 +1,5 @@
-import PageWrapper from "@/app/components/pageWrapper";
-import EnterOtp from "@/app/features/auth/enterOtp";
+import PageWrapper from "@/components/pageWrapper";
+import EnterOtp from "@/features/auth/enterOtp";
 
 const Page = () => {
   return (

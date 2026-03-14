@@ -1,7 +1,7 @@
 "use client";
-import Text from "@/app/shared/heading/Text";
-import TextWithLinks from "@/app/shared/heading/TextWithLinks";
-import Img from "@/app/shared/Img";
+import Text from "@/shared/heading/Text";
+import TextWithLinks from "@/shared/heading/TextWithLinks";
+import Img from "@/shared/Img";
 import { authSliderData } from "@/utils/static";
 import { CiHeadphones } from "react-icons/ci";
 import { FaStar } from "react-icons/fa";

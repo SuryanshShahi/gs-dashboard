@@ -1,5 +1,5 @@
-import PageWrapper from "@/app/components/pageWrapper";
-import Help from "@/app/features/help";
+import PageWrapper from "@/components/pageWrapper";
+import Help from "@/features/help";
 
 const Page = () => {
   return (
