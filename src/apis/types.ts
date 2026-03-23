@@ -52,3 +52,32 @@ export interface IOnboardPartners {
   };
   assignedRmId: string;
 }
+
+export type StudentOnboardGender = "MALE" | "FEMALE" | "OTHER";
+
+export interface IOnboardStudents {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  gender: StudentOnboardGender;
+  nationality: string;
+  countryOfResidence: string;
+  personalEmail: string;
+  phone: string;
+  whatsapp: string;
+  address: {
+    line1: string;
+    line2: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
+  education: Record<string, unknown>;
+  testScores: Record<string, unknown>;
+  profilePhotoUrl: string;
+  passportNumber: string;
+  passportExpiry: string;
+  counsellorId: string;
+  partnerId: string;
+}

@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useLayoutEffect, useRef, type ChangeEventHandler } from "react";
 import { FiEye, FiFileText, FiUserX } from "react-icons/fi";
 import { IoWarningOutline } from "react-icons/io5";
-import { Student } from "./mockData";
+import type { StudentTableRow } from "./types";
 
 const CheckboxCell = ({
   checked,
@@ -34,7 +34,7 @@ const CheckboxCell = ({
   );
 };
 
-export const studentColumns: ColumnDef<Student, any>[] = [
+export const studentColumns: ColumnDef<StudentTableRow, any>[] = [
   {
     id: "select",
     size: 40,

@@ -5,4 +5,5 @@ export const storageKeys = {
     ACCESS_TOKEN: "access_token",
     REFRESH_TOKEN: "refresh_token",
     PARTNER_ONBOARDING_DETAILS: "partner_onboarding_details",
+    STUDENT_ONBOARDING_DETAILS: "student_onboarding_details",
 } as const;

@@ -1,5 +1,8 @@
 "use client";
-import { PARTNER_ONBOARD_MUTATION_KEY } from "@/app/onboarding/partner/mutationKeys";
+import {
+  PARTNER_ONBOARD_MUTATION_KEY,
+  STUDENT_ONBOARD_MUTATION_KEY,
+} from "@/app/onboarding/onboardingMutationKeys";
 import Img from "@/shared/Img";
 import Button from "@/shared/buttons/Button";
 import { useIsMutating } from "@tanstack/react-query";
@@ -80,9 +83,14 @@ export default function OnboardingLayout({
   const pathname = usePathname();
   const partnerOnboardMutating =
     useIsMutating({ mutationKey: [...PARTNER_ONBOARD_MUTATION_KEY] }) > 0;
+  const studentOnboardMutating =
+    useIsMutating({ mutationKey: [...STUDENT_ONBOARD_MUTATION_KEY] }) > 0;
   const finishPartnerLoading =
     pathname === "/onboarding/partner/account-admin" &&
     partnerOnboardMutating;
+  const finishStudentLoading =
+    pathname === "/onboarding/student/passport-details" &&
+    studentOnboardMutating;
   const type = pathname.split("/")[2] as keyof typeof onboardingSteps;
   const steps = onboardingSteps[type] ?? onboardingSteps.partner;
   const activeStep = steps.findIndex((step) => pathname === step.path);
@@ -116,6 +124,21 @@ export default function OnboardingLayout({
         "partner-account-admin-form",
       ) as HTMLFormElement | null;
       accountAdminForm?.requestSubmit();
+      return;
+    }
+
+    if (pathname === "/onboarding/student/personal-details") {
+      const personalForm = document.getElementById(
+        "student-personal-details-form",
+      ) as HTMLFormElement | null;
+      personalForm?.requestSubmit();
+      return;
+    }
+    if (pathname === "/onboarding/student/passport-details") {
+      const passportForm = document.getElementById(
+        "student-passport-details-form",
+      ) as HTMLFormElement | null;
+      passportForm?.requestSubmit();
       return;
     }
 
@@ -273,8 +296,14 @@ export default function OnboardingLayout({
               btnName={isLastStep ? "Finish" : "Next"}
               icon={isLastStep ? null : <FiArrowRight className="w-4 h-4" />}
               onClick={handleNext}
-              isLoading={isLastStep && finishPartnerLoading}
-              disabled={isLastStep && finishPartnerLoading}
+              isLoading={
+                isLastStep &&
+                (finishPartnerLoading || finishStudentLoading)
+              }
+              disabled={
+                isLastStep &&
+                (finishPartnerLoading || finishStudentLoading)
+              }
             />
           </div>
         </div>

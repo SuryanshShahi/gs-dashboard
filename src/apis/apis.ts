@@ -7,11 +7,13 @@ import { refreshAccessTokenRequest } from "./authRefresh";
 import axiosInstance from "./axiosInstance";
 import {
   IOnboardPartners,
+  IOnboardStudents,
   IResendOtp,
   ISendOtp,
   IVerifyOtp,
 } from "./types";
-import type { IPartner } from "@/features/partners/types";
+import type { IPartner, IPartnerResponse } from "@/features/partners/types";
+import type { IStudent } from "@/features/students/types";
 
 /** @deprecated Prefer refreshAccessTokenRequest from ./authRefresh */
 export const getRefreshAccessToken = async () => {
@@ -74,13 +76,33 @@ export const onboardPartners = async (payload: IOnboardPartners) => {
   return res?.data?.data ?? {};
 };
 
-export const getPartners = async (): Promise<IPartner[]> => {
+export const getPartners = async () => {
   const res = await axiosInstance().get(API_CONSTANTS.getPartners);
-  const data = res?.data?.data;
-  return Array.isArray(data) ? data : [];
+  return res?.data ?? {};
 };
 
 export const getRms = async () => {
   const res = await axiosInstance().get(API_CONSTANTS.getRms);
+  return res?.data?.data ?? {};
+};
+
+// --------------------------------------------------------------------------------------
+// -------------------------------------- Students --------------------------------------
+// --------------------------------------------------------------------------------------
+
+
+export const getStudents = async () => {
+  const res = await axiosInstance().get(API_CONSTANTS.getStudents);
+  return res?.data ?? {};
+};
+
+
+export const onboardStudents = async (payload: IOnboardStudents) => {
+  const res = await axiosInstance().post(API_CONSTANTS.onboardStudents, payload);
+  return res?.data?.data ?? {};
+};
+
+export const getStudentPartnerRms = async () => {
+  const res = await axiosInstance().get(API_CONSTANTS.getStudentPartnerRms);
   return res?.data?.data ?? {};
 };

@@ -1,6 +1,6 @@
 import { getRms, onboardPartners } from "@/apis/apis";
 import { storageKeys } from "@/utils/enum";
-import { setLocalItem } from "@/utils/localstorage";
+import { removeLocalItem, setLocalItem } from "@/utils/localstorage";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { partnersAccountAdminSchema } from "@/utils/schemas/partners";
 import { useFormik } from "formik";
@@ -13,7 +13,7 @@ import {
     persistedString,
     readPartnerOnboarding,
 } from "../partnerOnboardingStorage";
-import { PARTNER_ONBOARD_MUTATION_KEY } from "../mutationKeys";
+import { PARTNER_ONBOARD_MUTATION_KEY } from "@/app/onboarding/onboardingMutationKeys";
 import { showToast } from "@/shared/ToastMessage";
 
 type AccountAdminFormValues = {
@@ -101,6 +101,7 @@ const useHook = () => {
         mutationFn: (data: IOnboardPartners) => onboardPartners(data),
         onSuccess: () => {
             router.replace("/partners");
+            removeLocalItem(storageKeys.PARTNER_ONBOARDING_DETAILS);
             showToast({
                 type: "success",
                 title: "Partner onboarding successful!",

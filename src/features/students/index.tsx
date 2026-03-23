@@ -8,13 +8,14 @@ import { useRouter } from "next/navigation";
 import { FiDownload, FiPlus, FiSearch } from "react-icons/fi";
 import { LuFilter } from "react-icons/lu";
 import { studentColumns } from "./columns";
-import { studentsData } from "./mockData";
+import useHook from "./useHook";
 
 const Students = () => {
+  const { tableRows, isLoading, isError, error } = useHook();
   const [search, setSearch] = useState("");
   const router = useRouter();
 
-  const filteredData = studentsData.filter(
+  const filteredData = tableRows.filter(
     (s) =>
       s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.id.toLowerCase().includes(search.toLowerCase()) ||
@@ -32,6 +33,15 @@ const Students = () => {
             "Track tasks efficiently and collaborate with your team.",
         }}
       />
+
+      {isError && (
+        <p className="text-sm text-red-600" role="alert">
+          {error instanceof Error ? error.message : "Failed to load students."}
+        </p>
+      )}
+      {isLoading && (
+        <p className="text-sm text-gray-500">Loading students…</p>
+      )}
 
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3">
@@ -71,9 +81,9 @@ const Students = () => {
 
       <DataTable
         columns={studentColumns}
-        data={filteredData}
+        data={isLoading ? [] : filteredData}
         enableSelection
-        totalResults={100}
+        totalResults={filteredData.length}
         className="flex-1 min-h-0"
       />
     </div>
