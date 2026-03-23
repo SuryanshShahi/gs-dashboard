@@ -125,6 +125,7 @@ const Page = () => {
             "Format: JPEG or PNG • Max Size: 10MB • Min Res: 500px X 500px",
           className: "col-span-6",
           type: "file",
+          variant: "image" as const,
         },
       ],
     },
@@ -186,6 +187,9 @@ const Page = () => {
                     <UploadFile
                       label={item.label}
                       subText={"subText" in item ? item.subText : undefined}
+                      variant={
+                        "variant" in item ? item.variant : "mixed"
+                      }
                     />
                   ) : (
                     <InputField className="w-full" {...item} />

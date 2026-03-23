@@ -1,24 +1,39 @@
 "use client";
 import InfoCluster from "@/shared/InfoCluster";
 import { ColumnDef } from "@tanstack/react-table";
+import { useLayoutEffect, useRef, type ChangeEventHandler } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { IoWarningOutline } from "react-icons/io5";
 import { Partner } from "./mockData";
 
+/** Passes the native change event through — required for TanStack row/table selection handlers. */
 const CheckboxCell = ({
   checked,
   onChange,
+  indeterminate,
 }: {
   checked: boolean;
-  onChange: (val: boolean) => void;
-}) => (
-  <input
-    type="checkbox"
-    checked={checked}
-    onChange={(e) => onChange(e.target.checked)}
-    className="w-4 h-4 rounded border-gray-300 accent-brand-600 cursor-pointer"
-  />
-);
+  onChange: ChangeEventHandler<HTMLInputElement>;
+  indeterminate?: boolean;
+}) => {
+  const ref = useRef<HTMLInputElement>(null);
+  useLayoutEffect(() => {
+    if (ref.current) {
+      ref.current.indeterminate = !!indeterminate;
+    }
+  }, [indeterminate]);
+
+  return (
+    <input
+      ref={ref}
+      type="checkbox"
+      checked={checked}
+      onChange={onChange}
+      onClick={(e) => e.stopPropagation()}
+      className="w-4 h-4 rounded border-gray-300 accent-brand-600 cursor-pointer"
+    />
+  );
+};
 
 export const partnerColumns: ColumnDef<Partner, any>[] = [
   {
@@ -28,6 +43,10 @@ export const partnerColumns: ColumnDef<Partner, any>[] = [
     header: ({ table }) => (
       <CheckboxCell
         checked={table.getIsAllPageRowsSelected()}
+        indeterminate={
+          table.getIsSomePageRowsSelected() &&
+          !table.getIsAllPageRowsSelected()
+        }
         onChange={table.getToggleAllPageRowsSelectedHandler()}
       />
     ),
@@ -43,7 +62,7 @@ export const partnerColumns: ColumnDef<Partner, any>[] = [
     header: "Partner ID",
     size: 110,
     cell: ({ getValue }) => (
-      <span className="text-sm text-gray-600">{getValue<string>()}</span>
+      <span className="text-sm text-gray-600">#{getValue<string>()}</span>
     ),
   },
   {
@@ -54,7 +73,10 @@ export const partnerColumns: ColumnDef<Partner, any>[] = [
       <InfoCluster
         titleProps={{
           children: row.original.name,
+          className: "!text-[14px] leading-snug",
+          as: "div",
         }}
+        showInitials
         descriptionProps={{
           children: row.original.location,
         }}
@@ -99,17 +121,15 @@ export const partnerColumns: ColumnDef<Partner, any>[] = [
         );
       }
       return (
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden shrink-0">
-            <span className="text-[10px] font-semibold text-gray-500">
-              {rm.name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
-            </span>
-          </div>
-          <span className="text-sm text-gray-700">{rm.name}</span>
-        </div>
+        <InfoCluster
+          titleProps={{
+            children: rm.name,
+            className: "!text-[14px] leading-snug",
+            as: "div",
+          }}
+          showInitials
+          initialsClassName="!h-8 !w-8"
+        />
       );
     },
   },

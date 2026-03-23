@@ -11,6 +11,7 @@ const InfoCluster: FC<
     className?: string;
     showInitials?: boolean;
     textWrapperClass?: string;
+    initialsClassName?: string;
   }>
 > = ({
   image,
@@ -20,11 +21,12 @@ const InfoCluster: FC<
   showInitials = false,
   children,
   textWrapperClass,
+  initialsClassName,
 }) => {
   return (
     <div className={clsx("flex items-center gap-3", className)}>
       {showInitials && (
-        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shrink-0">
+        <div className={clsx("w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shrink-0", initialsClassName)}>
           {image ? (
             <Img
               src={image}

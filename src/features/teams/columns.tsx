@@ -2,23 +2,37 @@
 import Chip from "@/shared/Chip";
 import InfoCluster from "@/shared/InfoCluster";
 import { ColumnDef } from "@tanstack/react-table";
+import { useLayoutEffect, useRef, type ChangeEventHandler } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { MemberStatus, TeamMember } from "./mockData";
 
 const CheckboxCell = ({
   checked,
   onChange,
+  indeterminate,
 }: {
   checked: boolean;
-  onChange: (val: boolean) => void;
-}) => (
-  <input
-    type="checkbox"
-    checked={checked}
-    onChange={(e) => onChange(e.target.checked)}
-    className="w-4 h-4 rounded border-gray-300 accent-brand-600 cursor-pointer"
-  />
-);
+  onChange: ChangeEventHandler<HTMLInputElement>;
+  indeterminate?: boolean;
+}) => {
+  const ref = useRef<HTMLInputElement>(null);
+  useLayoutEffect(() => {
+    if (ref.current) {
+      ref.current.indeterminate = !!indeterminate;
+    }
+  }, [indeterminate]);
+
+  return (
+    <input
+      ref={ref}
+      type="checkbox"
+      checked={checked}
+      onChange={onChange}
+      onClick={(e) => e.stopPropagation()}
+      className="w-4 h-4 rounded border-gray-300 accent-brand-600 cursor-pointer"
+    />
+  );
+};
 
 const statusConfig: Record<
   MemberStatus,
@@ -38,6 +52,10 @@ export const teamColumns: ColumnDef<TeamMember, any>[] = [
     header: ({ table }) => (
       <CheckboxCell
         checked={table.getIsAllPageRowsSelected()}
+        indeterminate={
+          table.getIsSomePageRowsSelected() &&
+          !table.getIsAllPageRowsSelected()
+        }
         onChange={table.getToggleAllPageRowsSelectedHandler()}
       />
     ),

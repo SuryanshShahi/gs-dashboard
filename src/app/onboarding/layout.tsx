@@ -1,6 +1,8 @@
 "use client";
+import { PARTNER_ONBOARD_MUTATION_KEY } from "@/app/onboarding/partner/mutationKeys";
 import Img from "@/shared/Img";
 import Button from "@/shared/buttons/Button";
+import { useIsMutating } from "@tanstack/react-query";
 import { FiArrowLeft, FiArrowRight, FiCheck, FiX } from "react-icons/fi";
 import {
   LuClipboardList,
@@ -76,6 +78,11 @@ export default function OnboardingLayout({
 }>) {
   const router = useRouter();
   const pathname = usePathname();
+  const partnerOnboardMutating =
+    useIsMutating({ mutationKey: [...PARTNER_ONBOARD_MUTATION_KEY] }) > 0;
+  const finishPartnerLoading =
+    pathname === "/onboarding/partner/account-admin" &&
+    partnerOnboardMutating;
   const type = pathname.split("/")[2] as keyof typeof onboardingSteps;
   const steps = onboardingSteps[type] ?? onboardingSteps.partner;
   const activeStep = steps.findIndex((step) => pathname === step.path);
@@ -83,6 +90,35 @@ export default function OnboardingLayout({
   const isLastStep = activeStep === steps.length - 1;
 
   const handleNext = () => {
+    if (pathname === "/onboarding/partner/overview") {
+      const overviewForm = document.getElementById(
+        "partner-overview-form",
+      ) as HTMLFormElement | null;
+      overviewForm?.requestSubmit();
+      return;
+    }
+    if (pathname === "/onboarding/partner/contract-document") {
+      const contractForm = document.getElementById(
+        "partner-contract-document-form",
+      ) as HTMLFormElement | null;
+      contractForm?.requestSubmit();
+      return;
+    }
+    if (pathname === "/onboarding/partner/bank-details") {
+      const bankDetailsForm = document.getElementById(
+        "partner-bank-details-form",
+      ) as HTMLFormElement | null;
+      bankDetailsForm?.requestSubmit();
+      return;
+    }
+    if (pathname === "/onboarding/partner/account-admin") {
+      const accountAdminForm = document.getElementById(
+        "partner-account-admin-form",
+      ) as HTMLFormElement | null;
+      accountAdminForm?.requestSubmit();
+      return;
+    }
+
     if (!isLastStep) {
       router.push(steps[activeStep + 1].path);
     }
@@ -237,6 +273,8 @@ export default function OnboardingLayout({
               btnName={isLastStep ? "Finish" : "Next"}
               icon={isLastStep ? null : <FiArrowRight className="w-4 h-4" />}
               onClick={handleNext}
+              isLoading={isLastStep && finishPartnerLoading}
+              disabled={isLastStep && finishPartnerLoading}
             />
           </div>
         </div>

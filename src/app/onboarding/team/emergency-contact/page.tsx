@@ -1,12 +1,10 @@
 "use client";
 import PageHeader from "@/shared/heading/PageHeader";
 import Text from "@/shared/heading/Text";
-import Button from "@/shared/buttons/Button";
 import Dropdown from "@/shared/input/Dropdown";
 import InputField from "@/shared/input/InputField";
-import UploadFile from "@/shared/input/UploadFile";
-import { FiInfo, FiUpload } from "react-icons/fi";
 import InputWithUpload from "@/shared/input/InputWithUpload";
+import UploadFile from "@/shared/input/UploadFile";
 
 const Page = () => {
   const inputFields = [
@@ -33,6 +31,7 @@ const Page = () => {
           subText: "Format: PDF • Max Size: 10MB",
           className: "col-span-2",
           type: "file",
+          variant: "document" as const,
         },
       ],
     },
@@ -117,6 +116,9 @@ const Page = () => {
                       label={item.label}
                       subText={"subText" in item ? item.subText : undefined}
                       required={"required" in item ? item.required : false}
+                      variant={
+                        "variant" in item ? item.variant : "mixed"
+                      }
                     />
                   ) : (
                     <InputField className="w-full" {...item} />

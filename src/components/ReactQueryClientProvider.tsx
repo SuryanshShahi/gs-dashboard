@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 // import useFirebase from "../utils/hooks/useFirebase";
 import { getLocalItem, setLocalItem } from "@/utils/localstorage";
-import { localStorageKeys } from "@/utils/enum";
+import { storageKeys } from "@/utils/enum";
 export interface IRegisterDevice {
   mode: string;
   identifier: string;
@@ -38,17 +38,17 @@ const ReactQueryClientProvider: FC<PropsWithChildren> = ({ children }) => {
   // const { getFCMToken } = useFirebase(queryClient);
 
   // const register = async () => {
-  //   const id = getLocalItem(localStorageKeys.REGISTERED_DEVICE_ID);
+  //   const id = getLocalItem(storageKeys.REGISTERED_DEVICE_ID);
   //   const notificationToken = await getFCMToken();
   //   if (!id) {
   //     const deviceId = (await (await FingerprintJS.load()).get()).visitorId;
-  //     setLocalItem(localStorageKeys.DEVICE_ID, deviceId);
+  //     setLocalItem(storageKeys.DEVICE_ID, deviceId);
   //     const res = await registerDevice({
   //       identifier: deviceId,
   //       mode: "employee_web",
   //       notificationToken: notificationToken ?? undefined,
   //     });
-  //     setLocalItem(localStorageKeys.REGISTERED_DEVICE_ID, res?.id);
+  //     setLocalItem(storageKeys.REGISTERED_DEVICE_ID, res?.id);
   //     setData((p) => ({ ...p, deviceId: res?.id }));
   //   } else {
   //     setData((p) => ({ ...p, deviceId: id as string }));

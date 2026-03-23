@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope, Geist_Mono } from "next/font/google";
+import { Manrope } from "next/font/google";
 import "@/styles/globals.css";
+import ReactQueryClientProvider from "@/components/ReactQueryClientProvider";
+import ToastProvider from "@/components/ToastProvider";
 import "@/styles/slick.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -33,7 +35,10 @@ export default function RootLayout({
       <body
         className={`${manrope.variable} font-[family-name:var(--font-manrope)] antialiased`}
       >
-        {children}
+        <ReactQueryClientProvider>
+          <ToastProvider />
+          {children}
+        </ReactQueryClientProvider>
       </body>
     </html>
   );

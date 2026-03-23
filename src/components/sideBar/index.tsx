@@ -43,11 +43,11 @@ const SideBar = ({
     <>
       <div
         className={clsx(
-          "md:py-6 py-4 px-0 space-y-4 w-full max-w-[270px] my-auto h-full flex flex-col",
+          "md:py-6 p-4 space-y-4 w-full max-w-[270px] my-auto h-full flex flex-col lg:bg-transparent bg-white",
           className,
         )}
       >
-        <div className="flex justify-between items-center px-6">
+        <div className="flex justify-between items-center">
           <Link href="/home" className="flex items-center gap-x-2">
             <Img
               height={32}

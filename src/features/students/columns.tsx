@@ -1,6 +1,7 @@
 "use client";
 import Img from "@/shared/Img";
 import { ColumnDef } from "@tanstack/react-table";
+import { useLayoutEffect, useRef, type ChangeEventHandler } from "react";
 import { FiEye, FiFileText, FiUserX } from "react-icons/fi";
 import { IoWarningOutline } from "react-icons/io5";
 import { Student } from "./mockData";
@@ -8,17 +9,30 @@ import { Student } from "./mockData";
 const CheckboxCell = ({
   checked,
   onChange,
+  indeterminate,
 }: {
   checked: boolean;
-  onChange: (val: boolean) => void;
-}) => (
-  <input
-    type="checkbox"
-    checked={checked}
-    onChange={(e) => onChange(e.target.checked)}
-    className="w-4 h-4 rounded border-gray-300 accent-brand-600 cursor-pointer"
-  />
-);
+  onChange: ChangeEventHandler<HTMLInputElement>;
+  indeterminate?: boolean;
+}) => {
+  const ref = useRef<HTMLInputElement>(null);
+  useLayoutEffect(() => {
+    if (ref.current) {
+      ref.current.indeterminate = !!indeterminate;
+    }
+  }, [indeterminate]);
+
+  return (
+    <input
+      ref={ref}
+      type="checkbox"
+      checked={checked}
+      onChange={onChange}
+      onClick={(e) => e.stopPropagation()}
+      className="w-4 h-4 rounded border-gray-300 accent-brand-600 cursor-pointer"
+    />
+  );
+};
 
 export const studentColumns: ColumnDef<Student, any>[] = [
   {
@@ -28,6 +42,10 @@ export const studentColumns: ColumnDef<Student, any>[] = [
     header: ({ table }) => (
       <CheckboxCell
         checked={table.getIsAllPageRowsSelected()}
+        indeterminate={
+          table.getIsSomePageRowsSelected() &&
+          !table.getIsAllPageRowsSelected()
+        }
         onChange={table.getToggleAllPageRowsSelectedHandler()}
       />
     ),
