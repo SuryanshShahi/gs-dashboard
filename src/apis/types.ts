@@ -79,5 +79,4 @@ export interface IOnboardStudents {
   passportNumber: string;
   passportExpiry: string;
   counsellorId: string;
-  partnerId: string;
 }

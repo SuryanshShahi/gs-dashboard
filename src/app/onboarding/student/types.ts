@@ -37,7 +37,6 @@ export interface IStudentPassportDetails {
   passportNumber: string;
   passportExpiry: string;
   counsellorId: string;
-  partnerId: string;
 }
 
 export interface IOnboardingStudentDetails {

@@ -12,7 +12,6 @@ function displayAvatarUrl(url: string): string {
     return "";
 }
 
-/** Maps API student → DataTable row shape. */
 function mapIStudentToTableRow(s: IStudent): StudentTableRow {
     const name = `${s.firstName} ${s.lastName}`.trim() || "—";
     const c = s.counsellor;

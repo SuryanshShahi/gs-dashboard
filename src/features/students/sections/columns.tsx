@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useLayoutEffect, useRef, type ChangeEventHandler } from "react";
 import { FiEye, FiFileText, FiUserX } from "react-icons/fi";
 import { IoWarningOutline } from "react-icons/io5";
-import type { StudentTableRow } from "./types";
+import type { StudentTableRow } from "../types";
 
 const CheckboxCell = ({
   checked,

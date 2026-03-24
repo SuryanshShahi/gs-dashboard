@@ -45,5 +45,4 @@ export const studentPassportSchema = Yup.object({
   passportNumber: Yup.string().required(ErrorMessage.REQUIRED),
   passportExpiry: Yup.string().required(ErrorMessage.REQUIRED),
   counsellorId: Yup.string().required(ErrorMessage.REQUIRED),
-  partnerId: Yup.string().required(ErrorMessage.REQUIRED),
 });

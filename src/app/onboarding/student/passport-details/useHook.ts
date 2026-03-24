@@ -2,7 +2,7 @@ import { getPartners, getRms, onboardStudents } from "@/apis/apis";
 import type { IOnboardStudents, StudentOnboardGender } from "@/apis/types";
 import { showToast } from "@/shared/ToastMessage";
 import { storageKeys } from "@/utils/enum";
-import { setLocalItem } from "@/utils/localstorage";
+import { removeLocalItem, setLocalItem } from "@/utils/localstorage";
 import { studentPassportSchema } from "@/utils/schemas/students";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useFormik } from "formik";
@@ -14,14 +14,16 @@ import {
 } from "../../partner/partnerOnboardingStorage";
 import { STUDENT_ONBOARD_MUTATION_KEY } from "@/app/onboarding/onboardingMutationKeys";
 import { readStudentOnboarding } from "../studentOnboardingStorage";
-import { countryLabelFromValue, type IOnboardingStudentDetails } from "../types";
+import {
+    countryLabelFromValue,
+    type IOnboardingStudentDetails,
+} from "../types";
 import type { IPartner } from "@/features/partners/types";
 
 type PassportFormValues = {
     passportNumber: string;
     passportExpiry: string;
     counsellorId: string;
-    partnerId: string;
 };
 
 function mapGenderToApi(g: string): StudentOnboardGender {
@@ -67,7 +69,6 @@ function buildOnboardStudentPayload(
         passportNumber: passport.passportNumber.trim(),
         passportExpiry: passport.passportExpiry,
         counsellorId: passport.counsellorId,
-        partnerId: passport.partnerId,
     };
 }
 
@@ -79,12 +80,12 @@ const useHook = () => {
         mutationKey: [...STUDENT_ONBOARD_MUTATION_KEY],
         mutationFn: (data: IOnboardStudents) => onboardStudents(data),
         onSuccess: () => {
-            setLocalItem(storageKeys.STUDENT_ONBOARDING_DETAILS, {});
             router.replace("/students");
             showToast({
                 type: "success",
                 title: "Student added successfully!",
             });
+            removeLocalItem(storageKeys.STUDENT_ONBOARDING_DETAILS);
             queryClient.invalidateQueries({ queryKey: ["students"] });
         },
         onError: (err: unknown) => {
@@ -106,18 +107,12 @@ const useHook = () => {
         queryFn: () => getRms(),
     });
 
-    const { data: partners = [] } = useQuery({
-        queryKey: ["partners"],
-        queryFn: getPartners,
-    });
-
     const initialValues = useMemo((): PassportFormValues => {
         const pd = readStudentOnboarding().passportDetails;
         return {
             passportNumber: persistedString(pd?.passportNumber),
             passportExpiry: persistedString(pd?.passportExpiry),
             counsellorId: persistedString(pd?.counsellorId),
-            partnerId: persistedString(pd?.partnerId),
         };
     }, []);
 
@@ -142,11 +137,6 @@ const useHook = () => {
             value: rm.id,
         }),
     );
-
-    const partnerOptions = partners?.data?.map((p: IPartner) => ({
-        label: p.companyName,
-        value: p.id,
-    })) ?? [];
 
     const inputFields = [
         {
@@ -185,28 +175,14 @@ const useHook = () => {
             ],
         },
         {
-            label: "Partner & Counsellor",
+            label: "Counsellor",
             fields: [
                 {
-                    label: "Partner",
-                    name: "partnerId",
-                    placeholder: "Select partner",
-                    required: true,
-                    className: "col-span-2",
-                    type: "select" as const,
-                    options: partnerOptions,
-                    value: values.partnerId,
-                    onChange: handleChange,
-                    onBlur: handleBlur,
-                    errorMessage:
-                        errors.partnerId && touched.partnerId ? errors.partnerId : "",
-                },
-                {
-                    label: "Counsellor (RM)",
+                    label: "Select RM",
                     name: "counsellorId",
                     placeholder: "Select relationship manager",
                     required: true,
-                    className: "col-span-2",
+                    className: "col-span-1",
                     type: "select" as const,
                     options: rmOptions,
                     value: values.counsellorId,

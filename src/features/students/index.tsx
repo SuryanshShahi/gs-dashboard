@@ -3,17 +3,30 @@ import Button from "@/shared/buttons/Button";
 import PageHeader from "@/shared/heading/PageHeader";
 import InputField from "@/shared/input/InputField";
 import DataTable from "@/shared/table/DataTable";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiDownload, FiPlus, FiSearch } from "react-icons/fi";
 import { LuFilter } from "react-icons/lu";
-import { studentColumns } from "./columns";
+import { studentColumns } from "./sections/columns";
+import StudentDetailDrawer from "./sections/StudentDetailDrawer";
+import type { IStudent, StudentTableRow } from "./types";
 import useHook from "./useHook";
 
 const Students = () => {
-  const { tableRows, isLoading, isError, error } = useHook();
+  const { students, tableRows, isLoading, isError, error } = useHook();
   const [search, setSearch] = useState("");
+  const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const router = useRouter();
+
+  const handleRowClick = useCallback(
+    (row: StudentTableRow) => {
+      const full = students?.data?.find((s) => s.id === row.id) ?? null;
+      setSelectedStudent(full);
+      setIsDrawerOpen(true);
+    },
+    [students],
+  );
 
   const filteredData = tableRows.filter(
     (s) =>
@@ -84,7 +97,14 @@ const Students = () => {
         data={isLoading ? [] : filteredData}
         enableSelection
         totalResults={filteredData.length}
+        onRowClick={handleRowClick}
         className="flex-1 min-h-0"
+      />
+
+      <StudentDetailDrawer
+        student={selectedStudent}
+        isOpen={isDrawerOpen}
+        close={() => setIsDrawerOpen(false)}
       />
     </div>
   );

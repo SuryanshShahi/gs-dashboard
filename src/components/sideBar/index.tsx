@@ -3,6 +3,7 @@ import Button from "@/shared/buttons/Button";
 import Text from "@/shared/heading/Text";
 import Img from "@/shared/Img";
 import ConfirmationModal from "@/shared/modal/ConfirmationModal";
+import { extractText } from "@/utils/functions";
 import useWindowDimensions from "@/utils/hooks/useWindowDimension";
 import { drawerMenuItems } from "@/utils/static";
 import clsx from "clsx";
@@ -78,9 +79,9 @@ const SideBar = ({
                   type="semibold"
                   size="sm"
                   variant="secondary"
-                  className="py-4"
+                  className="py-4 uppercase"
                 >
-                  {key}
+                  {extractText(key, "-", " ")}
                 </Text>
                 {value.map((item, idx) => {
                   let iconColor = "";

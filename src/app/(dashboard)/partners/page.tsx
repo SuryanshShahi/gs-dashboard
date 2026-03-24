@@ -4,7 +4,12 @@ import { Suspense } from "react";
 
 const Page = () => {
   return (
-    <PageWrapper>
+    <PageWrapper
+      breadCrumbs={[
+        { label: "Main Menu", path: "/" },
+        { label: "Partners", path: "/partners" },
+      ]}
+    >
       <Suspense>
         <Partners />
       </Suspense>

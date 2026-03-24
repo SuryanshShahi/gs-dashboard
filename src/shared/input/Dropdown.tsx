@@ -22,8 +22,13 @@ const Dropdown = ({
   required = false,
   options = [],
   placeholder,
+  value,
+  defaultValue,
   ...rest
 }: IDropdown) => {
+  const looksEmpty =
+    value !== undefined ? !value : !(defaultValue ?? "");
+
   return (
     <div className={clsx("flex flex-col gap-y-1", wrapperClass)}>
       {label && (
@@ -39,11 +44,13 @@ const Dropdown = ({
             "h-11 rounded-lg border px-3 text-sm outline-none appearance-none pr-9",
             icon && "pl-9",
             errorMessage ? "border-red-500" : "border-gray-100",
-            !rest.value && "text-gray-400",
+            looksEmpty && "text-gray-400",
             className,
           )}
-          defaultValue=""
           {...rest}
+          {...(value !== undefined
+            ? { value }
+            : { defaultValue: defaultValue ?? "" })}
         >
           {placeholder && (
             <option value="" disabled hidden>

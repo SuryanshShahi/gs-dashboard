@@ -26,6 +26,7 @@ interface DataTableProps<TData> {
   enableSelection?: boolean;
   totalResults?: number;
   className?: string;
+  onRowClick?: (row: TData) => void;
 }
 
 export default function DataTable<TData>({
@@ -35,6 +36,7 @@ export default function DataTable<TData>({
   enableSelection = false,
   totalResults,
   className,
+  onRowClick,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -106,7 +108,9 @@ export default function DataTable<TData>({
                 className={clsx(
                   "border-b border-gray-100 last:border-b-0 hover:bg-gray-50/50 transition-colors",
                   row.getIsSelected() && "bg-brand-50/30",
+                  onRowClick && "cursor-pointer",
                 )}
+                onClick={() => onRowClick?.(row.original)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="px-4 py-3 whitespace-nowrap">
