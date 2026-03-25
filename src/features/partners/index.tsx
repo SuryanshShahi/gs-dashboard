@@ -116,7 +116,6 @@ const Partners = () => {
             size="sm"
             btnName="Filter"
             icon={<LuFilter className="w-4 h-4" />}
-            iconFirst
           />
           <Button
             variant="primary"
@@ -124,7 +123,6 @@ const Partners = () => {
             onClick={() => router.push("/onboarding/partner/overview")}
             btnName="Onboard New Partner"
             icon={<FiPlus className="w-4 h-4" />}
-            iconFirst
           />
         </div>
       </div>

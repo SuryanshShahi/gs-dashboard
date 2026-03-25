@@ -102,7 +102,6 @@ const SideBar = ({
                         }
                         size="sm"
                         icon={item?.icon(iconColor)}
-                        iconFirst
                         fullWidth
                         className={clsx(
                           "!justify-start !gap-x-3 !font-medium",

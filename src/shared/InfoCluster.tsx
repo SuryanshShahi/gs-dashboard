@@ -12,6 +12,7 @@ const InfoCluster: FC<
     showInitials?: boolean;
     textWrapperClass?: string;
     initialsClassName?: string;
+    secondChild?: React.ReactNode;
   }>
 > = ({
   image,
@@ -22,11 +23,17 @@ const InfoCluster: FC<
   children,
   textWrapperClass,
   initialsClassName,
+  secondChild,
 }) => {
   return (
     <div className={clsx("flex items-center gap-3", className)}>
       {showInitials && (
-        <div className={clsx("w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shrink-0", initialsClassName)}>
+        <div
+          className={clsx(
+            "w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shrink-0",
+            initialsClassName,
+          )}
+        >
           {image ? (
             <Img
               src={image}
@@ -44,7 +51,8 @@ const InfoCluster: FC<
       {children}
       <div className={clsx("space-y-1", textWrapperClass)}>
         <Text as="h2" type="medium" {...titleProps} />
-        <Text as="p" size="xs" variant="text-gray-500" {...descriptionProps} />
+        <Text as="p" size="xs" variant="tertiary" {...descriptionProps} />
+        {secondChild}
       </div>
     </div>
   );

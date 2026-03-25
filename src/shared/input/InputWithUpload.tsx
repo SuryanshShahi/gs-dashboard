@@ -26,7 +26,6 @@ const InputWithUpload = ({
           className="!rounded-l-none border border-brand-100 !bg-brand-50"
           icon={<FiUpload className="w-4 h-4" />}
           secondaryIcon={<FiInfo className="w-4 h-4 order-last ml-2" />}
-          iconFirst
         />
       </div>
     </div>

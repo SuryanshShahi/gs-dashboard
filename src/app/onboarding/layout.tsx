@@ -8,8 +8,11 @@ import Button from "@/shared/buttons/Button";
 import { useIsMutating } from "@tanstack/react-query";
 import { FiArrowLeft, FiArrowRight, FiCheck, FiX } from "react-icons/fi";
 import {
+  LuClipboardCheck,
   LuClipboardList,
   LuFileText,
+  LuFileUp,
+  LuGraduationCap,
   LuLandmark,
   LuUser,
   LuUserPlus,
@@ -71,6 +74,32 @@ const onboardingSteps = {
       description: "Upload your passport details and assign a counsellor.",
       icon: LuUser,
       path: "/onboarding/student/passport-details",
+    },
+  ],
+  application: [
+    {
+      title: "Select Student",
+      description: "Choose an existing student or add a new one.",
+      icon: LuUser,
+      path: "/onboarding/application/select-student",
+    },
+    {
+      title: "Choose Program",
+      description: "Select country, university, and program.",
+      icon: LuGraduationCap,
+      path: "/onboarding/application/choose-program",
+    },
+    {
+      title: "Upload Documents",
+      description: "Upload required documents for the application.",
+      icon: LuFileUp,
+      path: "/onboarding/application/upload-documents",
+    },
+    {
+      title: "Review & Submit",
+      description: "Review all details before submitting.",
+      icon: LuClipboardCheck,
+      path: "/onboarding/application/review-submit",
     },
   ],
 };
@@ -142,6 +171,35 @@ export default function OnboardingLayout({
       return;
     }
 
+    if (pathname === "/onboarding/application/select-student") {
+      const form = document.getElementById(
+        "application-select-student-form",
+      ) as HTMLFormElement | null;
+      form?.requestSubmit();
+      return;
+    }
+    if (pathname === "/onboarding/application/choose-program") {
+      const form = document.getElementById(
+        "application-choose-program-form",
+      ) as HTMLFormElement | null;
+      form?.requestSubmit();
+      return;
+    }
+    if (pathname === "/onboarding/application/upload-documents") {
+      const form = document.getElementById(
+        "application-upload-documents-form",
+      ) as HTMLFormElement | null;
+      form?.requestSubmit();
+      return;
+    }
+    if (pathname === "/onboarding/application/review-submit") {
+      const form = document.getElementById(
+        "application-review-submit-form",
+      ) as HTMLFormElement | null;
+      form?.requestSubmit();
+      return;
+    }
+
     if (!isLastStep) {
       router.push(steps[activeStep + 1].path);
     }
@@ -158,6 +216,7 @@ export default function OnboardingLayout({
   const handleCancel = () => {
     if (type === "student") router.push("/students");
     else if (type === "team") router.push("/teams");
+    else if (type === "application") router.push("/applications");
     else router.push("/partners");
   };
 
@@ -179,7 +238,9 @@ export default function OnboardingLayout({
                 ? "Onboard New Team Member"
                 : type === "student"
                   ? "Add New Student"
-                  : "Onboard New Partner",
+                  : type === "application"
+                    ? "Create New Application"
+                    : "Onboard New Partner",
             variant: "white",
             size: "2xl",
           }}
@@ -189,7 +250,9 @@ export default function OnboardingLayout({
                 ? "Get started and onboard your new team member"
                 : type === "student"
                   ? "Get started and add your new student"
-                  : "Get started and onboard your new partner agency",
+                  : type === "application"
+                    ? "Complete the steps to submit a new student application."
+                    : "Get started and onboard your new partner agency",
             variant: "text-neutral-100",
             size: "sm",
           }}
@@ -274,7 +337,6 @@ export default function OnboardingLayout({
             size="md"
             btnName="Cancel"
             icon={<FiX className="w-4 h-4" />}
-            iconFirst
             className="!border-gray-200"
             onClick={handleCancel}
           />
@@ -285,7 +347,6 @@ export default function OnboardingLayout({
                 size="md"
                 btnName="Back"
                 icon={<FiArrowLeft className="w-4 h-4" />}
-                iconFirst
                 className="!border-gray-200"
                 onClick={handleBack}
               />
@@ -293,7 +354,13 @@ export default function OnboardingLayout({
             <Button
               variant="primary"
               size="md"
-              btnName={isLastStep ? "Finish" : "Next"}
+              btnName={
+                isLastStep
+                  ? type === "application"
+                    ? "Submit"
+                    : "Finish"
+                  : "Next"
+              }
               icon={isLastStep ? null : <FiArrowRight className="w-4 h-4" />}
               onClick={handleNext}
               isLoading={

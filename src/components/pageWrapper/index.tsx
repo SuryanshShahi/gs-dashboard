@@ -27,7 +27,7 @@ const PageWrapper: FC<PropsWithChildren<IPageWraps>> = ({
       <div
         ref={ref}
         className={clsx(
-          "animate-bottom overflow-hidden relative flex flex-col flex-1 min-h-0",
+          "animate-bottom overflow-hidden relative flex flex-col flex-1 min-h-0 max-h-[calc(100vh-117px)] overflow-y-auto",
           wrapperClass,
         )}
       >

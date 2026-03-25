@@ -4,23 +4,22 @@ import Loader from "../Loader";
 
 export interface IButton {
   variant?:
-  | "primary"
-  | "secondary"
-  | "secondary-color"
-  | "tertiary"
-  | "tertiary-color"
-  | "tertiary-link"
-  | "tertiary-color-link"
-  | "error";
+    | "primary"
+    | "secondary"
+    | "secondary-color"
+    | "tertiary"
+    | "tertiary-color"
+    | "tertiary-link"
+    | "tertiary-color-link"
+    | "error";
   size?: "xs" | "sm" | "md" | "lg" | "xl";
-  iconFirst?: boolean;
   disabled?: boolean;
   fullWidth?: boolean;
   isLoading?: boolean;
   btnName?: string;
   className?: string;
   onClick?: (
-    e?: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>
+    e?: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>,
   ) => void;
   icon?: ReactNode;
   secondaryIcon?: ReactNode;
@@ -34,7 +33,6 @@ const Button = ({
   variant = "primary",
   size = "md",
   icon,
-  iconFirst,
   btnName,
   onClick,
   disabled,
@@ -68,7 +66,7 @@ const Button = ({
       : "text-gray-600",
     "tertiary-color-link": disabled
       ? "text-gray-400 !cursor-not-allowed"
-      : "text-brand-700",
+      : "text-brand-700 !p-0",
     error: disabled
       ? "bg-gray-100 text-gray-400 !cursor-not-allowed border border-gray-200"
       : "bg-red-600 hover:bg-red-700 text-white",
@@ -98,7 +96,7 @@ const Button = ({
           "!w-full justify-center": fullWidth,
           "[&>*]:opacity-0": isLoading,
         },
-        className
+        className,
       )}
       form={form}
       type={type}
@@ -107,18 +105,10 @@ const Button = ({
       tabIndex={0}
     >
       {isLoading && <Loader wrapperClass="!opacity-100 absolute" />}
+      {icon}
       {btnName && (
-        <div
-          className={clsx(
-            "text-nowrap",
-            iconFirst && "order-last",
-            styleBtnName
-          )}
-        >
-          {btnName}
-        </div>
+        <div className={clsx("text-nowrap", styleBtnName)}>{btnName}</div>
       )}
-      {icon && <div className="text-xl">{icon}</div>}
       {secondaryIcon}
       {children}
     </button>

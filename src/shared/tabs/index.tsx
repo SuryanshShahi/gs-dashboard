@@ -13,6 +13,7 @@ interface ITabBar {
     body?: ReactNode;
   }[];
   className?: string;
+  tabContainerClassName?: string;
   variant?: "button" | "link";
   fullWidth?: boolean;
   handleClick?: () => void;
@@ -21,6 +22,7 @@ const TabBar: FC<PropsWithChildren<ITabBar>> = ({
   children,
   tabs,
   className,
+  tabContainerClassName,
   variant = "button",
   fullWidth = false,
   handleClick,
@@ -38,12 +40,16 @@ const TabBar: FC<PropsWithChildren<ITabBar>> = ({
     <div className={clsx("flex flex-col gap-6 min-h-0", className)}>
       <div className="relative shrink-0">
         <div
-          className={clsx("flex overflow-x-scroll w-max", {
-            "gap-x-1 rounded-[10px] bg-gray-50 p-1": variant === "button",
-            "gap-x-4": variant === "link",
-          })}
+          className={clsx(
+            "flex overflow-x-auto w-max [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
+            {
+              "gap-x-1 rounded-[10px] bg-gray-50 p-1": variant === "button",
+              "gap-x-4": variant === "link",
+            },
+            tabContainerClassName,
+          )}
         >
-          {tabs?.map((item, idx) => (
+          {tabs?.map((item) => (
             <div
               className={clsx(
                 "flex gap-x-2 text-nowrap text-quaternary font-semibold items-center justify-center cursor-pointer text-center text-sm",

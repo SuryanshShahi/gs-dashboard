@@ -27,6 +27,8 @@ interface DataTableProps<TData> {
   totalResults?: number;
   className?: string;
   onRowClick?: (row: TData) => void;
+  /** Hide footer (rows-per-page + page controls). */
+  hidePagination?: boolean;
 }
 
 export default function DataTable<TData>({
@@ -37,6 +39,7 @@ export default function DataTable<TData>({
   totalResults,
   className,
   onRowClick,
+  hidePagination = false,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -80,9 +83,7 @@ export default function DataTable<TData>({
                     onClick={header.column.getToggleSortingHandler()}
                     style={{
                       width:
-                        header.getSize() !== 150
-                          ? header.getSize()
-                          : undefined,
+                        header.getSize() !== 150 ? header.getSize() : undefined,
                     }}
                   >
                     <div className="flex items-center gap-1">
@@ -114,10 +115,7 @@ export default function DataTable<TData>({
               >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="px-4 py-3 whitespace-nowrap">
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext(),
-                    )}
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
               </tr>
@@ -126,61 +124,60 @@ export default function DataTable<TData>({
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className="flex items-center justify-between text-sm text-gray-500 pt-4 shrink-0">
-        <span>
-          Showing {from} to {to} of {total} results
-        </span>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span>Rows per Page</span>
-            <div className="relative">
-              <select
-                value={pagination.pageSize}
-                onChange={(e) =>
-                  setPagination((p) => ({
-                    ...p,
-                    pageSize: Number(e.target.value),
-                    pageIndex: 0,
-                  }))
-                }
-                className="appearance-none border border-gray-200 rounded-lg px-3 py-1 pr-7 text-sm bg-white cursor-pointer outline-none"
-              >
-                {[10, 20, 30, 50].map((size) => (
-                  <option key={size} value={size}>
-                    {size}
-                  </option>
-                ))}
-              </select>
-              <LuChevronDown className="w-3.5 h-3.5 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
+      {!hidePagination && (
+        <div className="flex items-center justify-between text-sm text-gray-500 pt-4 shrink-0">
+          <span>
+            Showing {from} to {to} of {total} results
+          </span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span>Rows per Page</span>
+              <div className="relative">
+                <select
+                  value={pagination.pageSize}
+                  onChange={(e) =>
+                    setPagination((p) => ({
+                      ...p,
+                      pageSize: Number(e.target.value),
+                      pageIndex: 0,
+                    }))
+                  }
+                  className="appearance-none border border-gray-200 rounded-lg px-3 py-1 pr-7 text-sm bg-white cursor-pointer outline-none"
+                >
+                  {[10, 20, 30, 50].map((size) => (
+                    <option key={size} value={size}>
+                      {size}
+                    </option>
+                  ))}
+                </select>
+                <LuChevronDown className="w-3.5 h-3.5 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="secondary"
+                size="xs"
+                className="!px-1.5 !py-1.5"
+                icon={<LuChevronLeft className="w-4 h-4" />}
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              />
+              <span className="min-w-[50px] text-center">
+                {pagination.pageIndex + 1} / {table.getPageCount()}
+              </span>
+              <Button
+                variant="secondary"
+                size="xs"
+                className="!px-1.5 !py-1.5"
+                icon={<LuChevronRight className="w-4 h-4" />}
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              />
             </div>
           </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="secondary"
-              size="xs"
-              className="!px-1.5 !py-1.5"
-              icon={<LuChevronLeft className="w-4 h-4" />}
-              iconFirst
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            />
-            <span className="min-w-[50px] text-center">
-              {pagination.pageIndex + 1} / {table.getPageCount()}
-            </span>
-            <Button
-              variant="secondary"
-              size="xs"
-              className="!px-1.5 !py-1.5"
-              icon={<LuChevronRight className="w-4 h-4" />}
-              iconFirst
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            />
-          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

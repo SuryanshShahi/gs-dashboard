@@ -70,7 +70,6 @@ const Students = () => {
             size="sm"
             btnName="Filter"
             icon={<LuFilter className="w-4 h-4" />}
-            iconFirst
           />
         </div>
         <div className="flex items-center gap-3">
@@ -79,14 +78,12 @@ const Students = () => {
             size="sm"
             btnName="Export"
             icon={<FiDownload className="w-4 h-4" />}
-            iconFirst
           />
           <Button
             variant="primary"
             size="sm"
             btnName="New Student"
             icon={<FiPlus className="w-4 h-4" />}
-            iconFirst
             onClick={() => router.push("/onboarding/student/personal-details")}
           />
         </div>

@@ -41,7 +41,6 @@ const BtnGroup = ({
             <Button
               btnName={item?.label}
               icon={item?.icon}
-              iconFirst={!!item?.icon}
               variant={
                 item?.value === selected ? "secondary-color" : "secondary"
               }
