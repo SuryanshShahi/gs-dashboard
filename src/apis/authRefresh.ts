@@ -54,12 +54,12 @@ export async function refreshAccessTokenRequest(): Promise<{
   const decoded = accessToken ? decodeToken(accessToken) : null;
   const identityId =
     decoded &&
-    typeof decoded === "object" &&
-    decoded !== null &&
-    "identity" in decoded
+      typeof decoded === "object" &&
+      decoded !== null &&
+      "identity" in decoded
       ? String(
-          (decoded as { identity?: { id?: string } }).identity?.id ?? "",
-        )
+        (decoded as { identity?: { id?: string } }).identity?.id ?? "",
+      )
       : "";
 
   const deviceIdentifier = getOrCreateDeviceId();

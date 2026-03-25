@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @config "../../tailwind.config.ts";
+@import "./slick.css";
 
 :root {
   --background: #ffffff;
@@ -51,4 +52,13 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
 }

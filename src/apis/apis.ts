@@ -1,5 +1,4 @@
 import { setCookie } from "@/utils/cookies";
-import { getLocalItem } from "@/utils/localstorage";
 import { storageKeys } from "@/utils/enum";
 import axios from "axios";
 import { API_CONSTANTS } from "./apiConstants";
@@ -12,22 +11,12 @@ import {
   ISendOtp,
   IVerifyOtp,
 } from "./types";
-import type { IPartner, IPartnerResponse } from "@/features/partners/types";
-import type { IStudent } from "@/features/students/types";
 
 /** @deprecated Prefer refreshAccessTokenRequest from ./authRefresh */
 export const getRefreshAccessToken = async () => {
   return refreshAccessTokenRequest();
 };
 
-
-// export const registerDevice = async (payload: IRegisterDevice) => {
-//   const res = await axiosInstance(MicroService.COMMUNICATION).post(
-//     API_CONSTANTS.registerDevice,
-//     payload
-//   );
-//   return res?.data?.response?.data ?? {};
-// };
 export const uploadToS3 = async (url: string, data: any, mimeType: string) => {
   const res = await axios.put(url, data, {
     headers: {

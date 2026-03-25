@@ -34,11 +34,11 @@ function getSharedRefreshPromise() {
 }
 
 function clearSessionAndRedirectLogin() {
-  // removeCookie(storageKeys.ACCESS_TOKEN);
-  // removeCookie(storageKeys.REFRESH_TOKEN);
-  // if (typeof window !== "undefined") {
-  //   window.location.href = "/login";
-  // }
+  removeCookie(storageKeys.ACCESS_TOKEN);
+  removeCookie(storageKeys.REFRESH_TOKEN);
+  if (typeof window !== "undefined") {
+    window.location.href = "/login";
+  }
 }
 
 const axiosInstance = (serviceName?: string) => {
@@ -57,9 +57,9 @@ const axiosInstance = (serviceName?: string) => {
         typeof token === "string"
           ? token
           : token &&
-              typeof token === "object" &&
-              token !== null &&
-              "accessToken" in token
+            typeof token === "object" &&
+            token !== null &&
+            "accessToken" in token
             ? String((token as { accessToken?: string }).accessToken ?? "")
             : null;
 

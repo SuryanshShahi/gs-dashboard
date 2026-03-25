@@ -30,7 +30,7 @@ const InfoCluster: FC<
       {showInitials && (
         <div
           className={clsx(
-            "w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shrink-0",
+            "w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shrink-0 text-xs",
             initialsClassName,
           )}
         >
@@ -42,7 +42,7 @@ const InfoCluster: FC<
               height={36}
             />
           ) : (
-            <span className="text-xs font-semibold text-gray-500">
+            <span className="font-semibold text-gray-500">
               {(titleProps?.children as string)?.charAt(0)}
             </span>
           )}

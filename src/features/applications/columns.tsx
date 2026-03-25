@@ -4,6 +4,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useLayoutEffect, useRef, type ChangeEventHandler } from "react";
 import { FiEye, FiFileText } from "react-icons/fi";
 import type { ApplicationRecord, ApplicationStage } from "./types";
+import Text from "@/shared/heading/Text";
+import InfoCluster from "@/shared/InfoCluster";
 
 const CheckboxCell = ({
   checked,
@@ -35,14 +37,7 @@ const CheckboxCell = ({
 
 function stageChipVariant(
   stage: ApplicationStage,
-):
-  | "success"
-  | "orange"
-  | "blue"
-  | "purple"
-  | "warning"
-  | "gray"
-  | "error" {
+): "success" | "orange" | "blue" | "purple" | "warning" | "gray" | "error" {
   switch (stage) {
     case "Enrolled":
     case "Offer Received":
@@ -83,8 +78,7 @@ export const applicationColumns: ColumnDef<ApplicationRecord, unknown>[] = [
       <CheckboxCell
         checked={table.getIsAllPageRowsSelected()}
         indeterminate={
-          table.getIsSomePageRowsSelected() &&
-          !table.getIsAllPageRowsSelected()
+          table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()
         }
         onChange={table.getToggleAllPageRowsSelectedHandler()}
       />
@@ -101,9 +95,9 @@ export const applicationColumns: ColumnDef<ApplicationRecord, unknown>[] = [
     header: "App ID",
     size: 100,
     cell: ({ getValue }) => (
-      <span className="text-sm text-gray-600 font-medium">
+      <Text as="span" size="sm" variant="secondary">
         {getValue<string>()}
-      </span>
+      </Text>
     ),
   },
   {
@@ -112,21 +106,17 @@ export const applicationColumns: ColumnDef<ApplicationRecord, unknown>[] = [
     size: 240,
     accessorFn: (row) => row.studentName,
     cell: ({ row }) => (
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
-          <span className="text-xs font-semibold text-gray-500">
-            {row.original.studentName.charAt(0)}
-          </span>
-        </div>
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-gray-900 truncate">
-            {row.original.studentName}
-          </p>
-          <p className="text-xs text-gray-500 truncate">
-            {row.original.studentEmail}
-          </p>
-        </div>
-      </div>
+      <InfoCluster
+        titleProps={{
+          children: row.original.studentName,
+          size: "sm",
+        }}
+        descriptionProps={{
+          children: row.original.studentEmail,
+        }}
+        showInitials
+        textWrapperClass="!space-y-0"
+      />
     ),
   },
   {
@@ -135,14 +125,16 @@ export const applicationColumns: ColumnDef<ApplicationRecord, unknown>[] = [
     size: 200,
     enableSorting: false,
     cell: ({ row }) => (
-      <div className="min-w-0">
-        <p className="text-sm font-medium text-gray-900 truncate">
-          {row.original.partnerName}
-        </p>
-        <p className="text-xs text-gray-500 truncate">
-          {row.original.counsellorName}
-        </p>
-      </div>
+      <InfoCluster
+        titleProps={{
+          children: row.original.partnerName,
+          size: "sm",
+        }}
+        descriptionProps={{
+          children: row.original.counsellorName,
+        }}
+        textWrapperClass="!space-y-0"
+      />
     ),
   },
   {
@@ -151,14 +143,16 @@ export const applicationColumns: ColumnDef<ApplicationRecord, unknown>[] = [
     size: 240,
     enableSorting: false,
     cell: ({ row }) => (
-      <div className="min-w-0">
-        <p className="text-sm font-medium text-gray-900 truncate">
-          {row.original.university}
-        </p>
-        <p className="text-xs text-gray-500 truncate">
-          {row.original.program}
-        </p>
-      </div>
+      <InfoCluster
+        titleProps={{
+          children: row.original.university,
+          size: "sm",
+        }}
+        descriptionProps={{
+          children: row.original.program,
+        }}
+        textWrapperClass="!space-y-0"
+      />
     ),
   },
   {
@@ -166,7 +160,9 @@ export const applicationColumns: ColumnDef<ApplicationRecord, unknown>[] = [
     header: "Intake",
     size: 100,
     cell: ({ getValue }) => (
-      <span className="text-sm text-gray-700">{getValue<string>()}</span>
+      <Text as="span" size="sm" variant="secondary">
+        {getValue<string>()}
+      </Text>
     ),
   },
   {
@@ -175,14 +171,7 @@ export const applicationColumns: ColumnDef<ApplicationRecord, unknown>[] = [
     size: 140,
     cell: ({ getValue }) => {
       const stage = getValue<ApplicationStage>();
-      return (
-        <Chip
-          title={stage}
-          variant={stageChipVariant(stage)}
-          size="xs"
-          className="normal-case!"
-        />
-      );
+      return <Chip title={stage} variant={stageChipVariant(stage)} size="xs" />;
     },
   },
   {
@@ -190,9 +179,9 @@ export const applicationColumns: ColumnDef<ApplicationRecord, unknown>[] = [
     header: "Submitted",
     size: 120,
     cell: ({ getValue }) => (
-      <span className="text-sm text-gray-700">
+      <Text as="span" size="sm" variant="secondary">
         {formatSubmitted(getValue<string>())}
-      </span>
+      </Text>
     ),
   },
   {
