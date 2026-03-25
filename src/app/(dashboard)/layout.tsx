@@ -33,7 +33,9 @@ export default function RootLayout({
           close={() => setIsOpen(false)}
         />
         <div
-          className={clsx("overflow-hidden w-full ml-6 my-6 p-4 rounded-lg bg-white flex flex-col")}
+          className={clsx(
+            "overflow-hidden w-full lg:ml-6 lg:my-6 p-4 rounded-lg bg-white flex flex-col",
+          )}
         >
           <div
             className={clsx(
@@ -45,11 +47,11 @@ export default function RootLayout({
           >
             <Link href="/home" className="flex items-center gap-x-2">
               <Img
-                height={50}
-                width={50}
+                height={32}
+                width={160}
                 alt=""
                 src="/assets/icons/logo.png"
-                className="h-8 w-12"
+                className="h-8"
                 isLocal
               />
               {scrollHeight > 100 && (

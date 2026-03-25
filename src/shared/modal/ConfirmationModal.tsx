@@ -1,12 +1,10 @@
 import clsx from "clsx";
 import { FaSave } from "react-icons/fa";
-import {
-  FaCircle,
-  FaTrash
-} from "react-icons/fa6";
+import { FaCircle, FaRegTrashCan, FaTrash } from "react-icons/fa6";
 import { GoCheckCircle } from "react-icons/go";
 import Button from "../buttons/Button";
 import { ModalTemplate } from "./ModalTemplate";
+import { FiTrash2 } from "react-icons/fi";
 
 const ConfirmationModal = ({
   close,
@@ -39,36 +37,39 @@ const ConfirmationModal = ({
       modalProps={{ close, isOpen, size }}
     >
       <div className={clsx("space-y-4", styleHeader)}>
-        <div className="flex w-max justify-center items-center self-start relative">
-          <FaCircle
-            size={48}
-            className={clsx({
-              "text-success-solid": type === "success",
-              "text-warning-solid": type === "warning",
-              "text-error-solid": type === "danger",
-            })}
-          />
+        <div className="flex w-max justify-center items-center relative">
           <div
             className={clsx(
-              "h-8 w-8 rounded-full absolute flex justify-center items-center",
+              "w-12 h-12 flex justify-center items-center rounded-full border",
               {
-                "bg-success-solid": type === "success",
-                "bg-warning-solid": type === "warning",
-                "bg-error-solid": type === "danger",
+                "bg-green-50 border-green-200": type === "success",
+                "bg-yellow-50 border-yellow-200": type === "warning",
+                "bg-red-50 border-red-200": type === "danger",
               },
             )}
           >
-            {type === "success" ? (
-              <GoCheckCircle size={20} className="text-white" />
-            ) : type === "warning" ? (
-              <FaSave size={20} className="text-white" />
-            ) : (
-              <FaTrash size={20} className="text-white" />
-            )}
+            <div
+              className={clsx(
+                "h-8 w-8 rounded-full flex justify-center items-center",
+                {
+                  "bg-green-600": type === "success",
+                  "bg-yellow-600": type === "warning",
+                  "bg-red-600": type === "danger",
+                },
+              )}
+            >
+              {type === "success" ? (
+                <GoCheckCircle size={16} className="text-white" />
+              ) : type === "warning" ? (
+                <FaSave size={16} className="text-white" />
+              ) : (
+                <FiTrash2 size={16} className="text-white" />
+              )}
+            </div>
           </div>
         </div>
         <div className="space-y-1">
-          <div className="text-lg font-semibold text-primary">{title}</div>
+          <div className="text-lg font-bold">{title}</div>
           <div className="text-sm text-tertiary">{description}</div>
         </div>
       </div>

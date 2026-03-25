@@ -14,6 +14,7 @@ const LoginViaEmail = () => {
     handleBlur,
     handleSubmit,
     isBtnDisabled,
+    isPending,
   } = useHook();
 
   return (
@@ -53,6 +54,7 @@ const LoginViaEmail = () => {
           onClick={() => handleSubmit()}
           fullWidth
           disabled={isBtnDisabled}
+          isLoading={isPending}
           icon={<FiArrowRight className="w-5 h-5" />}
         />
       </div>

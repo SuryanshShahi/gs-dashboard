@@ -3,12 +3,17 @@ import Button from "@/shared/buttons/Button";
 import Text from "@/shared/heading/Text";
 import OtpInputField from "@/shared/input/OtpInput";
 import { FiArrowRight } from "react-icons/fi";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import useHook from "./useHook";
 
 const EnterOtp = () => {
-  const [otp, setOtp] = useState("");
-  const router = useRouter();
+  const {
+    otp,
+    setOtp,
+    verifyOtpMutation,
+    email,
+    resendOtpMutation,
+    isPending,
+  } = useHook();
   return (
     <div className="space-y-10 max-w-[400px] mx-auto mt-10">
       <div className="flex flex-col items-center gap-y-2">
@@ -20,7 +25,7 @@ const EnterOtp = () => {
             Enter the OTP sent to your email
           </Text>
           <Text type="medium" size="lg" variant="brand">
-            va*********ma@accenture.com
+            {email}
           </Text>
         </div>
       </div>
@@ -30,13 +35,14 @@ const EnterOtp = () => {
           setOtp={(otp) => setOtp(otp)}
           errorMessage=""
           className="flex flex-col items-center"
-          resend={() => {}}
+          resend={() => resendOtpMutation()}
         />
         <Button
           btnName="Continue"
           variant="primary"
           fullWidth
-          onClick={() => router.push("/overview")}
+          onClick={() => verifyOtpMutation()}
+          isLoading={isPending}
           icon={<FiArrowRight className="w-5 h-5" />}
         />
       </div>

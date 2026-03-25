@@ -1,10 +1,18 @@
 "use client";
+import {
+  PARTNER_ONBOARD_MUTATION_KEY,
+  STUDENT_ONBOARD_MUTATION_KEY,
+} from "@/app/onboarding/onboardingMutationKeys";
 import Img from "@/shared/Img";
 import Button from "@/shared/buttons/Button";
+import { useIsMutating } from "@tanstack/react-query";
 import { FiArrowLeft, FiArrowRight, FiCheck, FiX } from "react-icons/fi";
 import {
+  LuClipboardCheck,
   LuClipboardList,
   LuFileText,
+  LuFileUp,
+  LuGraduationCap,
   LuLandmark,
   LuUser,
   LuUserPlus,
@@ -68,6 +76,32 @@ const onboardingSteps = {
       path: "/onboarding/student/passport-details",
     },
   ],
+  application: [
+    {
+      title: "Select Student",
+      description: "Choose an existing student or add a new one.",
+      icon: LuUser,
+      path: "/onboarding/application/select-student",
+    },
+    {
+      title: "Choose Program",
+      description: "Select country, university, and program.",
+      icon: LuGraduationCap,
+      path: "/onboarding/application/choose-program",
+    },
+    {
+      title: "Upload Documents",
+      description: "Upload required documents for the application.",
+      icon: LuFileUp,
+      path: "/onboarding/application/upload-documents",
+    },
+    {
+      title: "Review & Submit",
+      description: "Review all details before submitting.",
+      icon: LuClipboardCheck,
+      path: "/onboarding/application/review-submit",
+    },
+  ],
 };
 export default function OnboardingLayout({
   children,
@@ -76,6 +110,16 @@ export default function OnboardingLayout({
 }>) {
   const router = useRouter();
   const pathname = usePathname();
+  const partnerOnboardMutating =
+    useIsMutating({ mutationKey: [...PARTNER_ONBOARD_MUTATION_KEY] }) > 0;
+  const studentOnboardMutating =
+    useIsMutating({ mutationKey: [...STUDENT_ONBOARD_MUTATION_KEY] }) > 0;
+  const finishPartnerLoading =
+    pathname === "/onboarding/partner/account-admin" &&
+    partnerOnboardMutating;
+  const finishStudentLoading =
+    pathname === "/onboarding/student/passport-details" &&
+    studentOnboardMutating;
   const type = pathname.split("/")[2] as keyof typeof onboardingSteps;
   const steps = onboardingSteps[type] ?? onboardingSteps.partner;
   const activeStep = steps.findIndex((step) => pathname === step.path);
@@ -83,6 +127,79 @@ export default function OnboardingLayout({
   const isLastStep = activeStep === steps.length - 1;
 
   const handleNext = () => {
+    if (pathname === "/onboarding/partner/overview") {
+      const overviewForm = document.getElementById(
+        "partner-overview-form",
+      ) as HTMLFormElement | null;
+      overviewForm?.requestSubmit();
+      return;
+    }
+    if (pathname === "/onboarding/partner/contract-document") {
+      const contractForm = document.getElementById(
+        "partner-contract-document-form",
+      ) as HTMLFormElement | null;
+      contractForm?.requestSubmit();
+      return;
+    }
+    if (pathname === "/onboarding/partner/bank-details") {
+      const bankDetailsForm = document.getElementById(
+        "partner-bank-details-form",
+      ) as HTMLFormElement | null;
+      bankDetailsForm?.requestSubmit();
+      return;
+    }
+    if (pathname === "/onboarding/partner/account-admin") {
+      const accountAdminForm = document.getElementById(
+        "partner-account-admin-form",
+      ) as HTMLFormElement | null;
+      accountAdminForm?.requestSubmit();
+      return;
+    }
+
+    if (pathname === "/onboarding/student/personal-details") {
+      const personalForm = document.getElementById(
+        "student-personal-details-form",
+      ) as HTMLFormElement | null;
+      personalForm?.requestSubmit();
+      return;
+    }
+    if (pathname === "/onboarding/student/passport-details") {
+      const passportForm = document.getElementById(
+        "student-passport-details-form",
+      ) as HTMLFormElement | null;
+      passportForm?.requestSubmit();
+      return;
+    }
+
+    if (pathname === "/onboarding/application/select-student") {
+      const form = document.getElementById(
+        "application-select-student-form",
+      ) as HTMLFormElement | null;
+      form?.requestSubmit();
+      return;
+    }
+    if (pathname === "/onboarding/application/choose-program") {
+      const form = document.getElementById(
+        "application-choose-program-form",
+      ) as HTMLFormElement | null;
+      form?.requestSubmit();
+      return;
+    }
+    if (pathname === "/onboarding/application/upload-documents") {
+      const form = document.getElementById(
+        "application-upload-documents-form",
+      ) as HTMLFormElement | null;
+      form?.requestSubmit();
+      return;
+    }
+    if (pathname === "/onboarding/application/review-submit") {
+      const form = document.getElementById(
+        "application-review-submit-form",
+      ) as HTMLFormElement | null;
+      form?.requestSubmit();
+      return;
+    }
+
     if (!isLastStep) {
       router.push(steps[activeStep + 1].path);
     }
@@ -99,6 +216,7 @@ export default function OnboardingLayout({
   const handleCancel = () => {
     if (type === "student") router.push("/students");
     else if (type === "team") router.push("/teams");
+    else if (type === "application") router.push("/applications");
     else router.push("/partners");
   };
 
@@ -120,7 +238,9 @@ export default function OnboardingLayout({
                 ? "Onboard New Team Member"
                 : type === "student"
                   ? "Add New Student"
-                  : "Onboard New Partner",
+                  : type === "application"
+                    ? "Create New Application"
+                    : "Onboard New Partner",
             variant: "white",
             size: "2xl",
           }}
@@ -130,7 +250,9 @@ export default function OnboardingLayout({
                 ? "Get started and onboard your new team member"
                 : type === "student"
                   ? "Get started and add your new student"
-                  : "Get started and onboard your new partner agency",
+                  : type === "application"
+                    ? "Complete the steps to submit a new student application."
+                    : "Get started and onboard your new partner agency",
             variant: "text-neutral-100",
             size: "sm",
           }}
@@ -215,7 +337,6 @@ export default function OnboardingLayout({
             size="md"
             btnName="Cancel"
             icon={<FiX className="w-4 h-4" />}
-            iconFirst
             className="!border-gray-200"
             onClick={handleCancel}
           />
@@ -226,7 +347,6 @@ export default function OnboardingLayout({
                 size="md"
                 btnName="Back"
                 icon={<FiArrowLeft className="w-4 h-4" />}
-                iconFirst
                 className="!border-gray-200"
                 onClick={handleBack}
               />
@@ -234,9 +354,23 @@ export default function OnboardingLayout({
             <Button
               variant="primary"
               size="md"
-              btnName={isLastStep ? "Finish" : "Next"}
+              btnName={
+                isLastStep
+                  ? type === "application"
+                    ? "Submit"
+                    : "Finish"
+                  : "Next"
+              }
               icon={isLastStep ? null : <FiArrowRight className="w-4 h-4" />}
               onClick={handleNext}
+              isLoading={
+                isLastStep &&
+                (finishPartnerLoading || finishStudentLoading)
+              }
+              disabled={
+                isLastStep &&
+                (finishPartnerLoading || finishStudentLoading)
+              }
             />
           </div>
         </div>

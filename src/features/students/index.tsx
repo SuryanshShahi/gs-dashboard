@@ -3,18 +3,32 @@ import Button from "@/shared/buttons/Button";
 import PageHeader from "@/shared/heading/PageHeader";
 import InputField from "@/shared/input/InputField";
 import DataTable from "@/shared/table/DataTable";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiDownload, FiPlus, FiSearch } from "react-icons/fi";
 import { LuFilter } from "react-icons/lu";
-import { studentColumns } from "./columns";
-import { studentsData } from "./mockData";
+import { studentColumns } from "./sections/columns";
+import StudentDetailDrawer from "./sections/StudentDetailDrawer";
+import type { IStudent, StudentTableRow } from "./types";
+import useHook from "./useHook";
 
 const Students = () => {
+  const { students, tableRows, isLoading, isError, error } = useHook();
   const [search, setSearch] = useState("");
+  const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const router = useRouter();
 
-  const filteredData = studentsData.filter(
+  const handleRowClick = useCallback(
+    (row: StudentTableRow) => {
+      const full = students?.data?.find((s) => s.id === row.id) ?? null;
+      setSelectedStudent(full);
+      setIsDrawerOpen(true);
+    },
+    [students],
+  );
+
+  const filteredData = tableRows.filter(
     (s) =>
       s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.id.toLowerCase().includes(search.toLowerCase()) ||
@@ -33,6 +47,15 @@ const Students = () => {
         }}
       />
 
+      {isError && (
+        <p className="text-sm text-red-600" role="alert">
+          {error instanceof Error ? error.message : "Failed to load students."}
+        </p>
+      )}
+      {isLoading && (
+        <p className="text-sm text-gray-500">Loading students…</p>
+      )}
+
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3">
           <InputField
@@ -47,7 +70,6 @@ const Students = () => {
             size="sm"
             btnName="Filter"
             icon={<LuFilter className="w-4 h-4" />}
-            iconFirst
           />
         </div>
         <div className="flex items-center gap-3">
@@ -56,14 +78,12 @@ const Students = () => {
             size="sm"
             btnName="Export"
             icon={<FiDownload className="w-4 h-4" />}
-            iconFirst
           />
           <Button
             variant="primary"
             size="sm"
             btnName="New Student"
             icon={<FiPlus className="w-4 h-4" />}
-            iconFirst
             onClick={() => router.push("/onboarding/student/personal-details")}
           />
         </div>
@@ -71,10 +91,17 @@ const Students = () => {
 
       <DataTable
         columns={studentColumns}
-        data={filteredData}
+        data={isLoading ? [] : filteredData}
         enableSelection
-        totalResults={100}
+        totalResults={filteredData.length}
+        onRowClick={handleRowClick}
         className="flex-1 min-h-0"
+      />
+
+      <StudentDetailDrawer
+        student={selectedStudent}
+        isOpen={isDrawerOpen}
+        close={() => setIsDrawerOpen(false)}
       />
     </div>
   );

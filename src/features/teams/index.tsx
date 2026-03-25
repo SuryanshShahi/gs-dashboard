@@ -46,7 +46,6 @@ const Teams = () => {
             size="sm"
             btnName="Filter"
             icon={<LuFilter className="w-4 h-4" />}
-            iconFirst
           />
         </div>
         <div className="flex items-center gap-3">
@@ -55,14 +54,12 @@ const Teams = () => {
             size="sm"
             btnName="Export"
             icon={<FiDownload className="w-4 h-4" />}
-            iconFirst
           />
           <Button
             variant="primary"
             size="sm"
             btnName="Onboard New Member"
             icon={<FiPlus className="w-4 h-4" />}
-            iconFirst
             onClick={() => router.push("/onboarding/team/personal-details")}
           />
         </div>

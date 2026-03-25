@@ -3,6 +3,7 @@ import Button from "@/shared/buttons/Button";
 import Text from "@/shared/heading/Text";
 import Img from "@/shared/Img";
 import ConfirmationModal from "@/shared/modal/ConfirmationModal";
+import { extractText } from "@/utils/functions";
 import useWindowDimensions from "@/utils/hooks/useWindowDimension";
 import { drawerMenuItems } from "@/utils/static";
 import clsx from "clsx";
@@ -43,11 +44,11 @@ const SideBar = ({
     <>
       <div
         className={clsx(
-          "md:py-6 py-4 px-0 space-y-4 w-full max-w-[270px] my-auto h-full flex flex-col",
+          "md:py-6 p-4 space-y-4 w-full max-w-[270px] my-auto h-full flex flex-col lg:bg-transparent bg-white",
           className,
         )}
       >
-        <div className="flex justify-between items-center px-6">
+        <div className="flex justify-between items-center">
           <Link href="/home" className="flex items-center gap-x-2">
             <Img
               height={32}
@@ -78,9 +79,9 @@ const SideBar = ({
                   type="semibold"
                   size="sm"
                   variant="secondary"
-                  className="py-4"
+                  className="py-4 uppercase"
                 >
-                  {key}
+                  {extractText(key, "-", " ")}
                 </Text>
                 {value.map((item, idx) => {
                   let iconColor = "";
@@ -101,7 +102,6 @@ const SideBar = ({
                         }
                         size="sm"
                         icon={item?.icon(iconColor)}
-                        iconFirst
                         fullWidth
                         className={clsx(
                           "!justify-start !gap-x-3 !font-medium",

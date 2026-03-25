@@ -1,51 +1,17 @@
+"use client";
 import PageHeader from "@/shared/heading/PageHeader";
 import InputField from "@/shared/input/InputField";
 import UploadFile from "@/shared/input/UploadFile";
+import useHook from "./useHook";
 
 const Page = () => {
-  const inputFields = [
-    {
-      label: "GSTIN",
-      name: "gstin",
-      placeholder: "Enter GSTIN",
-      required: true,
-      className: "col-span-1",
-      type: "text",
-    },
-    {
-      label: "PAN",
-      name: "pan",
-      placeholder: "Enter PAN",
-      required: true,
-      className: "col-span-1",
-      type: "text",
-    },
-    {
-      label: "Service Agreement",
-      name: "serviceAgreement",
-      required: true,
-      className: "col-span-2",
-      type: "file",
-    },
-    {
-      label: "Non-Disclosure Agreement",
-      name: "nonDisclosureAgreement",
-      subText: "Format: PDF • Max Size: 10MB",
-      required: true,
-      className: "col-span-2",
-      type: "file",
-    },
-    {
-      label: "Commission Structure",
-      name: "commissionStructure",
-      subText: "Format: PDF • Max Size: 10MB",
-      required: true,
-      className: "col-span-2",
-      type: "file",
-    },
-  ];
+  const { inputFields, handleSubmit } = useHook();
   return (
-    <div className="max-w-[600px] mx-auto">
+    <form
+      id="partner-contract-document-form"
+      className="max-w-[600px] mx-auto"
+      onSubmit={handleSubmit}
+    >
       <PageHeader
         titleProps={{
           children: "Onboard New Partner",
@@ -70,7 +36,7 @@ const Page = () => {
           </div>
         ))}
       </div>
-    </div>
+    </form>
   );
 };
 

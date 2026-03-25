@@ -1,7 +1,7 @@
 import { FaRegFolderOpen } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
 import { FiHeadphones } from "react-icons/fi";
-import { LuLayoutGrid, LuSettings } from "react-icons/lu";
+import { LuClipboardList, LuLayoutGrid, LuSettings } from "react-icons/lu";
 import { PiUsersBold } from "react-icons/pi";
 import { RiFolderUserLine, RiShieldStarLine } from "react-icons/ri";
 import React from "react";
@@ -73,6 +73,14 @@ export const drawerMenuItems = (): Record<string, DrawerMenuItem[]> => {
           <RiFolderUserLine height={24} width={24} color={color || iconColor} />
         ),
         key: "students",
+        disabled: false,
+      },
+      {
+        title: "Applications",
+        icon: (color?: string) => (
+          <LuClipboardList height={24} width={24} color={color || iconColor} />
+        ),
+        key: "applications",
         disabled: false,
       },
       {

@@ -9,17 +9,18 @@ import { BsGrid, BsTable } from "react-icons/bs";
 import { FiPlus, FiSearch } from "react-icons/fi";
 import { LuFilter } from "react-icons/lu";
 import { partnerColumns } from "./columns";
-import { partnersData } from "./mockData";
 import { useRouter } from "next/navigation";
 import CardWrapper from "@/shared/cards/CardWrapper";
 import InfoCluster from "@/shared/InfoCluster";
 import Text from "@/shared/heading/Text";
 import Chip from "@/shared/Chip";
+import useHook from "./useHook";
 
 const Partners = () => {
+  const { tableRows, isLoading, isError, error } = useHook();
   const [search, setSearch] = useState("");
   const router = useRouter();
-  const filteredData = partnersData.filter(
+  const filteredData = tableRows.filter(
     (p) =>
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       p.id.toLowerCase().includes(search.toLowerCase()),
@@ -33,9 +34,9 @@ const Partners = () => {
       component: (
         <DataTable
           columns={partnerColumns}
-          data={filteredData}
+          data={isLoading ? [] : filteredData}
           enableSelection
-          totalResults={100}
+          totalResults={filteredData.length}
           className="flex-1 min-h-0"
         />
       ),
@@ -46,35 +47,38 @@ const Partners = () => {
       reactIcon: <BsGrid className="w-4 h-4" />,
       component: (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Array(10)
-            .fill(null)
-            .map((_, idx) => (
-              <CardWrapper
-                key={idx}
-                className="!px-[10px] !py-2 rounded-xl space-y-2"
-              >
-                <InfoCluster
-                  showInitials
-                  children={
+          {(isLoading ? [] : filteredData).map((p) => (
+            <CardWrapper
+              key={p.id}
+              className="!px-[10px] !py-2 rounded-xl space-y-2"
+            >
+              <InfoCluster
+                showInitials
+                children={
+                  p.pendingApplications != null ? (
                     <Chip
-                      title="24 Pending"
+                      title={`${p.pendingApplications} Pending`}
                       variant="orange"
                       size="xs"
                       className="order-last !rounded-full ml-auto -mt-[18px]"
                     />
-                  }
-                  textWrapperClass="!space-y-0"
-                  titleProps={{ children: "EduNext" }}
-                  descriptionProps={{
-                    children: "New Delhi, India",
-                    size: "xs",
-                  }}
-                />
-                <Text variant="tertiary" size="xxs">
-                  9999 Counsellors • 9999 Active Students • 9999 Active Courses
-                </Text>
-              </CardWrapper>
-            ))}
+                  ) : undefined
+                }
+                textWrapperClass="!space-y-0"
+                titleProps={{ children: p.name }}
+                descriptionProps={{
+                  children: p.location,
+                  size: "xs",
+                }}
+              />
+              <Text variant="tertiary" size="xxs">
+                {p.relationshipManager
+                  ? `${p.relationshipManager.name} • `
+                  : "Unassigned • "}
+                {p.activeStudents} Active Students
+              </Text>
+            </CardWrapper>
+          ))}
         </div>
       ),
     },
@@ -89,6 +93,13 @@ const Partners = () => {
           children: "Track tasks efficiently and collaborate with your team.",
         }}
       />
+
+      {isError && (
+        <p className="text-sm text-red-600" role="alert">
+          {error instanceof Error ? error.message : "Failed to load partners."}
+        </p>
+      )}
+      {isLoading && <p className="text-sm text-gray-500">Loading partners…</p>}
 
       <div className="relative flex-1 min-h-0 flex flex-col">
         <TabBar tabs={tabData} className="flex-1 min-h-0" />
@@ -105,7 +116,6 @@ const Partners = () => {
             size="sm"
             btnName="Filter"
             icon={<LuFilter className="w-4 h-4" />}
-            iconFirst
           />
           <Button
             variant="primary"
@@ -113,7 +123,6 @@ const Partners = () => {
             onClick={() => router.push("/onboarding/partner/overview")}
             btnName="Onboard New Partner"
             icon={<FiPlus className="w-4 h-4" />}
-            iconFirst
           />
         </div>
       </div>

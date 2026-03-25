@@ -1,12 +1,28 @@
 "use client";
 import Button from "@/shared/buttons/Button";
+import InfoCluster from "@/shared/InfoCluster";
+import MenuPopover, {
+  type MenuPopoverItem,
+} from "@/shared/popover/MenuPopover";
 import clsx from "clsx";
 import { usePathname, useRouter } from "next/navigation";
-import { Fragment } from "react";
-import { IoIosArrowForward } from "react-icons/io";
+import { Fragment, useState } from "react";
+import { FiBell, FiLogOut, FiSearch } from "react-icons/fi";
+import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
+import { LuRefreshCw } from "react-icons/lu";
 import { extractText } from "@/utils/functions";
+import { storageKeys } from "@/utils/enum";
+import { clearLocalStorage, removeLocalItem } from "@/utils/localstorage";
 import { IBreadCrumbs } from "@/utils/types";
-import { tw } from "../../../tailwind.config";
+import { RiHome6Line } from "react-icons/ri";
+import { removeCookie } from "@/utils/cookies";
+import ConfirmationModal from "@/shared/modal/ConfirmationModal";
+
+const DEFAULT_USER = {
+  name: "Suryansh Shokeen",
+  role: "GS Admin",
+  initials: "SS",
+};
 
 const Header = ({ breadCrumbs }: { breadCrumbs?: IBreadCrumbs[] }) => {
   const router = useRouter();
@@ -14,37 +30,121 @@ const Header = ({ breadCrumbs }: { breadCrumbs?: IBreadCrumbs[] }) => {
   const data: IBreadCrumbs[] = breadCrumbs?.length
     ? breadCrumbs
     : [pathName?.split("/")?.[1]].map((e) => ({
-      label: extractText(e),
-    }));
+        label: extractText(e),
+      }));
+
+  const handleLogout = () => {
+    setIsLoading(true);
+    clearLocalStorage();
+    removeCookie(storageKeys.ACCESS_TOKEN);
+    removeCookie(storageKeys.REFRESH_TOKEN);
+    router.push("/login");
+  };
+
+  const handleSwitchRole = () => {
+    router.push("/settings");
+  };
+
+  const userMenuItems: MenuPopoverItem[] = [
+    {
+      type: "item",
+      id: "switch-role",
+      label: "Switch role",
+      onClick: handleSwitchRole,
+      icon: <LuRefreshCw />,
+      variant: "default",
+    },
+    { type: "separator", id: "after-switch-role" },
+    {
+      type: "item",
+      id: "logout",
+      label: "Logout",
+      onClick: () => setIsOpen(true),
+      icon: <FiLogOut />,
+      variant: "danger",
+    },
+  ];
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   return (
-    <div className="lg:flex hidden items-center gap-x-2 pb-4 sticky top-0">
-      {/* <SvgHome
-        stroke={tw?.textColor["secondary"]}
-        className="cursor-pointer"
-        onClick={() => router.push("/home")}
-        onKeyDown={() => { }}
-        role="button"
-        tabIndex={0}
-      /> */}
-      {data?.map((item, idx) => (
-        <Fragment key={item?.label + idx}>
-          <IoIosArrowForward className="text-gray-300" />
-          <Button
-            btnName={item?.label}
-            size="sm"
-            className={clsx(
-              "capitalize !px-1 !py-0",
-              data?.[data?.length - 1]?.label === item?.label
-                ? "text-gray-700"
-                : "!font-medium"
-            )}
-            variant="tertiary"
-            onClick={
-              item?.path ? () => router.push(item?.path ?? "") : () => { }
+    <div className="lg:flex hidden items-center justify-between gap-4 pb-4 sticky top-0 w-full">
+      <div className="flex items-center gap-x-2 min-w-0 flex-1">
+        <RiHome6Line
+          size={18}
+          className="cursor-pointer text-gray-500 shrink-0"
+          onClick={() => router.push("/")}
+        />
+        {data?.map((item, idx) => (
+          <Fragment key={item?.label + idx}>
+            <IoIosArrowForward className="text-gray-300 shrink-0" />
+            <Button
+              btnName={item?.label}
+              size="sm"
+              className={clsx(
+                "capitalize !px-1 !py-0",
+                data?.[data?.length - 1]?.label === item?.label
+                  ? "text-gray-700"
+                  : "!font-medium",
+              )}
+              variant="tertiary"
+              onClick={
+                item?.path ? () => router.push(item?.path ?? "") : () => {}
+              }
+            />
+          </Fragment>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-x-4">
+        <Button
+          variant="secondary"
+          className="!p-2"
+          size="xs"
+          icon={<FiSearch size={18} />}
+        />
+
+        <Button icon={<FiBell size={20} />} variant="tertiary-color-link">
+          <span className="absolute bg-red-600 px-1 text-white rounded-full -top-[6px] -right-[6px] text-xs">
+            4
+          </span>
+        </Button>
+
+        <div className="h-8 w-px shrink-0 bg-gray-200" aria-hidden />
+
+        <MenuPopover items={userMenuItems}>
+          <InfoCluster
+            titleProps={{
+              children: DEFAULT_USER.name,
+              size: "sm",
+            }}
+            descriptionProps={{
+              children: DEFAULT_USER.role,
+              className: "text-left",
+            }}
+            textWrapperClass="!space-y-[2px]"
+            initialsClassName="!text-sm"
+            showInitials
+            children={
+              <IoIosArrowDown className="h-4 w-4 shrink-0 text-gray-400 order-last" />
             }
           />
-        </Fragment>
-      ))}
+        </MenuPopover>
+      </div>
+      <ConfirmationModal
+        title="Confirm Logout"
+        description="Are you sure you want to log out?"
+        onSubmit={handleLogout}
+        styleHeader="flex gap-x-4 !space-y-0 items-center"
+        rightBtnName="Yes, Logout"
+        leftBtnName="Back"
+        type="danger"
+        isOpen={isOpen}
+        size="md"
+        isLoading={isLoading}
+        close={() => setIsOpen(false)}
+      />
     </div>
   );
 };
