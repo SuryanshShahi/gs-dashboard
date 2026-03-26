@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export const extractText = (
     text: string,
     replace?: string,
@@ -30,4 +32,16 @@ export const decodeToken = (token: string) => {
         console.error("Failed to decode token:", e);
         return null;
     }
+};
+
+export function combine(...args: (string | undefined | null)[]): string {
+    return args?.filter(Boolean)?.join(" ");
+}
+
+export const convertDate = (date: any) => {
+    return moment(date).local().format("DD MMM YYYY");
+};
+
+export const convertTime = (time: any) => {
+    return moment(time).local().format("hh:mm A");
 };

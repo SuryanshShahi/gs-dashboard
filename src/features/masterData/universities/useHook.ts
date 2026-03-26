@@ -1,6 +1,7 @@
+import { getUniversities } from "@/apis/apis";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { universitiesMockData } from "./mockData";
-import type { UniversityTableRow } from "./types";
+import type { IUniversity, UniversityTableRow } from "./types";
 
 function computeStats(rows: UniversityTableRow[]) {
   const total = rows.length;
@@ -11,16 +12,36 @@ function computeStats(rows: UniversityTableRow[]) {
 }
 
 const useHook = () => {
-  const rows = universitiesMockData;
+  const { data: universities, isLoading: isUniversitiesLoading, error } = useQuery<IUniversity[]>({
+    queryKey: ["universities"],
+    queryFn: () => getUniversities(),
+  });
+
+
+  const rows = useMemo<UniversityTableRow[]>(() => {
+    const list = Array.isArray(universities) ? universities : [];
+    if (!list.length) return [];
+
+    return list.map((u: IUniversity, i: number) => ({
+      id: u.id,
+      name: u.name,
+      city: u.city,
+      countryName: u.country,
+      flagEmoji: "🌍",
+      type: 'Public',
+      qsRanking: 0,
+      programs: u._count.programs,
+      status: u.isActive ? "ACTIVE" : "INACTIVE",
+    }));
+  }, [universities]);
 
   const stats = useMemo(() => computeStats(rows), [rows]);
-
   return {
     tableRows: rows,
     stats,
-    isLoading: false,
-    isError: false,
-    error: null as Error | null,
+    isLoading: isUniversitiesLoading,
+    isError: Boolean(error),
+    error: error as Error | null,
   };
 };
 

@@ -11,6 +11,7 @@ import clsx from "clsx";
 import { useMemo, useState } from "react";
 import { FiPlus, FiRefreshCw, FiSearch } from "react-icons/fi";
 import { LuBookOpen, LuCloudUpload, LuFilter, LuGlobe } from "react-icons/lu";
+import AddUniversityModal from "./addUniversity";
 import { universityColumns } from "./columns";
 import useHook from "./useHook";
 
@@ -21,16 +22,18 @@ const Universities = () => {
   const { tableRows, stats, isLoading, isError, error } = useHook();
   const [search, setSearch] = useState("");
   const [countryFilter, setCountryFilter] = useState("");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  const countryOptions = useMemo(() => {
+  const baseCountryOptions = useMemo(() => {
     const names = Array.from(
       new Set(tableRows.map((r) => r.countryName)),
     ).sort();
-    return [
-      { label: "All Countries", value: "" },
-      ...names.map((name) => ({ label: name, value: name })),
-    ];
+    return names.map((name) => ({ label: name, value: name }));
   }, [tableRows]);
+  const countryOptions = useMemo(
+    () => [{ label: "All Countries", value: "" }, ...baseCountryOptions],
+    [baseCountryOptions],
+  );
 
   const filteredData = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -145,6 +148,7 @@ const Universities = () => {
             size="sm"
             btnName="Add University"
             icon={<FiPlus className="w-4 h-4" />}
+            onClick={() => setIsAddModalOpen(true)}
           />
         </div>
       </div>
@@ -155,6 +159,11 @@ const Universities = () => {
         enableSelection
         totalResults={filteredData.length}
         className="flex-1 min-h-0"
+      />
+
+      <AddUniversityModal
+        isOpen={isAddModalOpen}
+        close={() => setIsAddModalOpen(false)}
       />
     </div>
   );

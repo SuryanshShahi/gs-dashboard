@@ -1,6 +1,8 @@
+import { getPrograms } from "@/apis/apis";
+import { combine } from "@/utils/functions";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { programsMockData } from "./mockData";
-import type { ProgramTableRow } from "./types";
+import type { IProgram, ProgramTableRow } from "./types";
 
 function computeStats(rows: ProgramTableRow[]) {
   const total = rows.length;
@@ -11,16 +13,37 @@ function computeStats(rows: ProgramTableRow[]) {
 }
 
 const useHook = () => {
-  const rows = programsMockData;
+  const { data: programs, isLoading, isError, error } = useQuery<IProgram[]>({
+    queryKey: ["programs"],
+    queryFn: getPrograms,
+  });
 
-  const stats = useMemo(() => computeStats(rows), [rows]);
+  const tableRows = useMemo<ProgramTableRow[]>(() => {
+    if (!programs?.length) return [];
+
+    return programs.map((p) => ({
+      id: p.id,
+      name: p.name,
+      category: p.level,
+      universityName: p.university?.name ?? "",
+      countryName: p.university?.country ?? "",
+      flagEmoji: "🌍",
+      duration: "1 year",
+      studyMode: "Full-Time",
+      intakes: ["Sep 2025"],
+      tuitionPerYear: combine(p.currency, p.tuitionFee),
+      status: p.isActive ? "ACTIVE" : "INACTIVE",
+    }));
+  }, [programs]);
+
+  const stats = useMemo(() => computeStats(tableRows), [tableRows]);
 
   return {
-    tableRows: rows,
+    tableRows,
     stats,
-    isLoading: false,
-    isError: false,
-    error: null as Error | null,
+    isLoading,
+    isError,
+    error: error as Error | null,
   };
 };
 

@@ -41,7 +41,7 @@ const Dropdown = ({
         {icon && <div className="absolute left-3 top-[14px]">{icon}</div>}
         <select
           className={clsx(
-            "h-11 rounded-lg border px-3 text-sm outline-none appearance-none pr-9",
+            "h-11 rounded-lg border px-3 text-sm outline-none appearance-none pr-9 w-full",
             icon && "pl-9",
             errorMessage ? "border-red-500" : "border-gray-100",
             looksEmpty && "text-gray-400",

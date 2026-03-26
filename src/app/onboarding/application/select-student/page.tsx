@@ -2,26 +2,20 @@
 
 import Button from "@/shared/buttons/Button";
 import CardWrapper from "@/shared/cards/CardWrapper";
+import Chip from "@/shared/Chip";
 import DividerWithText from "@/shared/divider/DividerWithText";
 import PageHeader from "@/shared/heading/PageHeader";
 import Text from "@/shared/heading/Text";
+import InfoCluster from "@/shared/InfoCluster";
 import InputField from "@/shared/input/InputField";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { FiPlus, FiSearch } from "react-icons/fi";
 import useHook from "./useHook";
-import InfoCluster from "@/shared/InfoCluster";
 
 const Page = () => {
-  const {
-    search,
-    setSearch,
-    filteredStudents,
-    selectedId,
-    selectStudent,
-    handleSubmit,
-    submitError,
-  } = useHook();
+  const { students, values, setFieldValue, handleSubmit, submitError } =
+    useHook();
   const router = useRouter();
 
   return (
@@ -52,36 +46,44 @@ const Page = () => {
           <InputField
             type="text"
             placeholder="Search by name, email or student ID..."
-            value={search}
+            className="w-full"
+            value={values.search}
             icon={<FiSearch className="text-gray-400" size={16} />}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => setFieldValue("search", e.target.value)}
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {filteredStudents.map((s) => (
+            {students?.map((s) => (
               <CardWrapper
-                key={s.id}
-                onClick={() => selectStudent(s.id)}
+                key={s.studentId}
+                onClick={() => setFieldValue("selectedStudent", s)}
                 className={clsx(
-                  "cursor-pointer transition-shadow",
-                  selectedId === s.id &&
-                    "ring-2 ring-brand-600 border-brand-200 shadow-sm",
+                  "cursor-pointer transition-shadow space-y-2",
+                  values.selectedStudent.studentId === s.studentId &&
+                    "!border-brand-500 !bg-brand-50",
                 )}
               >
                 <InfoCluster
                   titleProps={{
-                    children: s.name,
+                    children: s.studentName,
                     type: "semibold",
                     size: "sm",
                   }}
+                  initialsClassName="!bg-brand-100"
                   textWrapperClass="!space-y-[2px]"
                   showInitials
-                  descriptionProps={{ children: s.email }}
-                  secondChild={
-                    <Text as="p" size="xs" variant="secondary">
-                      {s.country} · {s.id}
-                    </Text>
-                  }
+                  descriptionProps={{ children: s.studentEmail }}
                 />
+                <div className="flex items-center gap-x-2">
+                  <Chip
+                    title={s.countryLabel}
+                    variant="gray"
+                    className="!rounded-md"
+                    size="xs"
+                  />
+                  <Text as="p" size="xs" variant="secondary">
+                    {s.studentId.slice(0, 6)}
+                  </Text>
+                </div>
               </CardWrapper>
             ))}
           </div>
@@ -101,10 +103,9 @@ const Page = () => {
           <Button
             type="button"
             variant="secondary"
-            size="md"
+            size="sm"
             btnName="Add New Student"
             icon={<FiPlus className="w-4 h-4" />}
-            className="w-full sm:w-auto border-brand-600 text-brand-600"
             onClick={() => router.push("/onboarding/student/personal-details")}
           />
         </div>

@@ -35,7 +35,7 @@ const InputField = ({
         <input
           type={type}
           className={clsx(
-            "h-11 rounded-lg border px-3 text-sm outline-none",
+            "h-11 rounded-lg border px-3 text-sm outline-none w-full",
             icon && "pl-9",
             secondaryIcon && "pr-9",
             isDate && "[color-scheme:light]",

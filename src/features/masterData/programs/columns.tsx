@@ -1,14 +1,14 @@
 "use client";
 
+import Button from "@/shared/buttons/Button";
 import Chip from "@/shared/Chip";
+import Text from "@/shared/heading/Text";
 import { ColumnDef } from "@tanstack/react-table";
+import clsx from "clsx";
 import { useLayoutEffect, useRef, type ChangeEventHandler } from "react";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { LuToggleLeft } from "react-icons/lu";
-import type { ProgramCategory, ProgramTableRow } from "./types";
-import Text from "@/shared/heading/Text";
-import Button from "@/shared/buttons/Button";
-import clsx from "clsx";
+import type { ProgramTableRow } from "./types";
 
 const CheckboxCell = ({
   checked,
@@ -38,7 +38,7 @@ const CheckboxCell = ({
   );
 };
 
-export function categoryLabel(cat: ProgramCategory): string {
+export function categoryLabel(cat: string): string {
   switch (cat) {
     case "UNDERGRADUATE":
       return "Undergraduate";
@@ -50,23 +50,6 @@ export function categoryLabel(cat: ProgramCategory): string {
       return "Diploma";
     default:
       return cat;
-  }
-}
-
-function categoryChipVariant(
-  cat: ProgramCategory,
-): "blue" | "purple" | "orange" | "pink" {
-  switch (cat) {
-    case "UNDERGRADUATE":
-      return "blue";
-    case "POSTGRADUATE":
-      return "purple";
-    case "PHD":
-      return "orange";
-    case "DIPLOMA":
-      return "pink";
-    default:
-      return "blue";
   }
 }
 

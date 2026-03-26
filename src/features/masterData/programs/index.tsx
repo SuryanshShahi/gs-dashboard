@@ -18,14 +18,15 @@ import {
   LuGlobe,
 } from "react-icons/lu";
 import { programColumns } from "./columns";
+import AddProgramModal from "./addProgram";
 import ProgramDetailDrawer from "./ProgramDetailDrawer";
-import type { ProgramCategory, ProgramTableRow } from "./types";
+import type { ProgramTableRow } from "./types";
 import useHook from "./useHook";
 
 const iconBox =
   "w-10 h-10 rounded-xl flex items-center justify-center shrink-0";
 
-const LEVEL_TABS: { id: "all" | ProgramCategory; label: string }[] = [
+const LEVEL_TABS: { id: string; label: string }[] = [
   { id: "all", label: "All" },
   { id: "UNDERGRADUATE", label: "Undergraduate" },
   { id: "POSTGRADUATE", label: "Postgraduate" },
@@ -33,10 +34,7 @@ const LEVEL_TABS: { id: "all" | ProgramCategory; label: string }[] = [
   { id: "DIPLOMA", label: "Diploma" },
 ];
 
-function matchesLevelTab(
-  row: ProgramTableRow,
-  tab: "all" | ProgramCategory,
-): boolean {
+function matchesLevelTab(row: ProgramTableRow, tab: string): boolean {
   if (tab === "all") return true;
   return row.category === tab;
 }
@@ -44,7 +42,7 @@ function matchesLevelTab(
 function filteredPrograms(
   rows: ProgramTableRow[],
   search: string,
-  tab: "all" | ProgramCategory,
+  tab: string,
 ): ProgramTableRow[] {
   const q = search.toLowerCase().trim();
   return rows.filter((r) => {
@@ -63,6 +61,7 @@ const Programs = () => {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<ProgramTableRow | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const handleRowClick = useCallback((row: ProgramTableRow) => {
     setSelected(row);
@@ -103,8 +102,7 @@ const Programs = () => {
           children: "Programs",
         }}
         descriptionProps={{
-          children:
-            "Manage academic programs offered by partner universities.",
+          children: "Manage academic programs offered by partner universities.",
         }}
       />
 
@@ -113,9 +111,7 @@ const Programs = () => {
           {error instanceof Error ? error.message : "Failed to load programs."}
         </p>
       )}
-      {isLoading && (
-        <p className="text-sm text-gray-500">Loading programs…</p>
-      )}
+      {isLoading && <p className="text-sm text-gray-500">Loading programs…</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {[
@@ -190,6 +186,7 @@ const Programs = () => {
             size="sm"
             btnName="Add Program"
             icon={<FiPlus className="w-4 h-4" />}
+            onClick={() => setIsAddModalOpen(true)}
           />
         </div>
       </div>
@@ -198,6 +195,10 @@ const Programs = () => {
         program={selected}
         isOpen={drawerOpen}
         close={closeDrawer}
+      />
+      <AddProgramModal
+        isOpen={isAddModalOpen}
+        close={() => setIsAddModalOpen(false)}
       />
     </div>
   );

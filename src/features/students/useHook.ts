@@ -39,7 +39,7 @@ const useHook = () => {
         error,
     } = useQuery<IStudentResponse>({
         queryKey: ["students"],
-        queryFn: getStudents,
+        queryFn: () => getStudents(),
     });
 
     const tableRows: StudentTableRow[] = useMemo(

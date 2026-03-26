@@ -1,21 +1,30 @@
+import { getStudents } from "@/apis/apis";
+import { IStudentResponse } from "@/features/students/types";
+import { combine } from "@/utils/functions";
+import { applicationSelectStudentSchema } from "@/utils/schemas/applicationOnboarding";
+import { useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { applicationSelectStudentSchema } from "@/utils/schemas/applicationOnboarding";
 import {
   readApplicationOnboarding,
   writeApplicationOnboarding,
 } from "../applicationOnboardingStorage";
-import { MOCK_EXISTING_STUDENTS } from "./mockStudents";
+import useDebounce from "@/utils/hooks/useDebounce";
 
 const useHook = () => {
   const router = useRouter();
-  const [search, setSearch] = useState("");
 
   const initialValues = useMemo(() => {
     const s = readApplicationOnboarding().selectStudent;
     return {
-      studentId: s?.studentId ?? "",
+      selectedStudent: {
+        studentId: s?.studentId ?? "",
+        studentName: s?.studentName ?? "",
+        studentEmail: s?.studentEmail ?? "",
+        countryLabel: s?.countryLabel ?? "",
+      },
+      search: "",
     };
   }, []);
 
@@ -30,49 +39,45 @@ const useHook = () => {
     initialValues,
     enableReinitialize: true,
     validationSchema: applicationSelectStudentSchema,
-    onSubmit: (submitted) => {
-      const picked = MOCK_EXISTING_STUDENTS.find(
-        (x) => x.id === submitted.studentId,
-      );
-      if (!picked) return;
+    onSubmit: (val) => {
       writeApplicationOnboarding({
         selectStudent: {
-          studentId: picked.id,
-          studentName: picked.name,
-          studentEmail: picked.email,
-          countryLabel: picked.country,
+          studentId: val.selectedStudent.studentId,
+          studentName: (val.selectedStudent.studentName),
+          studentEmail: val.selectedStudent.studentEmail,
+          countryLabel: val.selectedStudent.countryLabel,
         },
       });
       router.push("/onboarding/application/choose-program");
     },
   });
+  const debouncedSearch = useDebounce(values.search, 300);
+  const { data: students, isLoading: isStudentsLoading } = useQuery<IStudentResponse>({
+    queryKey: ["students", debouncedSearch],
+    queryFn: () => getStudents(debouncedSearch),
+  });
 
-  const filteredStudents = useMemo(() => {
-    const q = search.toLowerCase().trim();
-    if (!q) return MOCK_EXISTING_STUDENTS;
-    return MOCK_EXISTING_STUDENTS.filter(
-      (s) =>
-        s.name.toLowerCase().includes(q) ||
-        s.email.toLowerCase().includes(q) ||
-        s.id.toLowerCase().includes(q),
-    );
-  }, [search]);
+  const selectedStudentError = errors.selectedStudent;
+  const submitError =
+    selectedStudentError && (touched.selectedStudent || submitCount > 0)
+      ? typeof selectedStudentError === "string"
+        ? selectedStudentError
+        : selectedStudentError.studentId ?? ""
+      : "";
 
-  const selectStudent = (id: string) => {
-    setFieldValue("studentId", id);
-  };
 
   return {
-    search,
-    setSearch,
-    filteredStudents,
-    selectedId: values.studentId,
-    selectStudent,
+    isStudentsLoading,
+    students: students?.data.map((s) => ({
+      studentId: s.id,
+      studentName: combine(s.firstName, s.lastName),
+      studentEmail: s.personalEmail,
+      countryLabel: s.countryOfResidence,
+    })) ?? [],
     handleSubmit,
-    submitError:
-      errors.studentId && (touched.studentId || submitCount > 0)
-        ? errors.studentId
-        : "",
+    setFieldValue,
+    submitError,
+    values,
   };
 };
 

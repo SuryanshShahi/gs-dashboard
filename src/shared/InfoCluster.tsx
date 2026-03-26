@@ -1,11 +1,11 @@
 import clsx from "clsx";
 import Img from "./Img";
 import Text, { TextProps } from "./heading/Text";
-import { FC, PropsWithChildren } from "react";
+import { FC, PropsWithChildren, ReactNode } from "react";
 
 const InfoCluster: FC<
   PropsWithChildren<{
-    image?: string;
+    image?: ReactNode;
     titleProps: TextProps;
     descriptionProps?: TextProps;
     className?: string;
@@ -34,13 +34,15 @@ const InfoCluster: FC<
             initialsClassName,
           )}
         >
-          {image ? (
+          {typeof image === "string" ? (
             <Img
               src={image}
               alt={titleProps.children as string}
               width={36}
               height={36}
             />
+          ) : image ? (
+            image
           ) : (
             <span className="font-semibold text-gray-500">
               {(titleProps?.children as string)?.charAt(0)}

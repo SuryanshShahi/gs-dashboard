@@ -28,7 +28,12 @@ function fileRequired(field: keyof NonNullable<IApplicationOnboarding["uploadDoc
 }
 
 export const applicationSelectStudentSchema = Yup.object({
-  studentId: Yup.string().required(ErrorMessage.REQUIRED),
+  selectedStudent: Yup.object({
+    studentId: Yup.string().required(ErrorMessage.REQUIRED),
+    studentName: Yup.string(),
+    studentEmail: Yup.string(),
+    countryLabel: Yup.string(),
+  }).required(ErrorMessage.REQUIRED),
 });
 
 export const applicationChooseProgramSchema = Yup.object({

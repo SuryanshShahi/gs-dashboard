@@ -5,6 +5,9 @@ import { API_CONSTANTS } from "./apiConstants";
 import { refreshAccessTokenRequest } from "./authRefresh";
 import axiosInstance from "./axiosInstance";
 import {
+  IAddProgram,
+  IAddUniversity,
+  INewApplication,
   IOnboardPartners,
   IOnboardStudents,
   IResendOtp,
@@ -80,8 +83,8 @@ export const getRms = async () => {
 // --------------------------------------------------------------------------------------
 
 
-export const getStudents = async () => {
-  const res = await axiosInstance().get(API_CONSTANTS.getStudents);
+export const getStudents = async (search?: string) => {
+  const res = await axiosInstance().get(API_CONSTANTS.getStudents(search));
   return res?.data ?? {};
 };
 
@@ -95,3 +98,58 @@ export const getStudentPartnerRms = async () => {
   const res = await axiosInstance().get(API_CONSTANTS.getStudentPartnerRms);
   return res?.data?.data ?? {};
 };
+// --------------------------------------------------------------------------------------
+// -------------------------------------- Countries -------------------------------------
+// --------------------------------------------------------------------------------------
+
+export const getCountries = async () => {
+  const res = await axiosInstance().get(API_CONSTANTS.getCountries);
+  return res?.data?.data ?? {};
+};
+export const getCountriesStates = async (countryId: string) => {
+  const res = await axiosInstance().get(API_CONSTANTS.getCountriesStates(countryId));
+  return res?.data?.data ?? {};
+};
+export const getStateCities = async (stateId: string) => {
+  const res = await axiosInstance().get(API_CONSTANTS.getStateCities(stateId));
+  return res?.data?.data ?? {};
+};
+// --------------------------------------------------------------------------------------
+// ------------------------------------ Universities ------------------------------------
+// --------------------------------------------------------------------------------------
+
+export const getUniversities = async () => {
+  const res = await axiosInstance().get(API_CONSTANTS.getUniversities);
+  return res?.data?.data ?? {};
+};
+
+export const addUniversity = async (payload: IAddUniversity) => {
+  const res = await axiosInstance().post(API_CONSTANTS.addUniversity, payload);
+  return res?.data?.data ?? {};
+};
+
+
+// --------------------------------------------------------------------------------------
+// -------------------------------------- Programs --------------------------------------
+// --------------------------------------------------------------------------------------
+
+export const getPrograms = async () => {
+  const res = await axiosInstance().get(API_CONSTANTS.getPrograms);
+  return res?.data?.data ?? {};
+};
+
+export const addProgram = async (payload: IAddProgram) => {
+  const res = await axiosInstance().post(API_CONSTANTS.addProgram, payload);
+  return res?.data?.data ?? {};
+};
+
+// --------------------------------------------------------------------------------------
+// ------------------------------------ Applications ------------------------------------
+// --------------------------------------------------------------------------------------
+
+export const newApplication = async (payload: INewApplication) => {
+  const res = await axiosInstance().post(API_CONSTANTS.newApplication, payload);
+  return res?.data?.data ?? {};
+};
+
+

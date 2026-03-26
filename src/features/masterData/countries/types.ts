@@ -10,3 +10,10 @@ export interface CountryTableRow {
   universities: number;
   status: CountryStatus;
 }
+
+export interface ICountry {
+  id: string;
+  name: string;
+  code: string;
+  dialCode: string;
+}

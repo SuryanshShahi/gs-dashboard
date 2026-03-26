@@ -6,6 +6,9 @@ import Divider from "../divider";
 import InputField, { IInputField } from "../input/InputField";
 import { IModal, Modal } from ".";
 import { FaXmark } from "react-icons/fa6";
+import InfoCluster from "../InfoCluster";
+import IconWithBg from "../IconWithBg";
+import { LuBuilding2 } from "react-icons/lu";
 
 export interface IModalTemplate {
   className?: string;
@@ -39,35 +42,26 @@ export const ModalTemplate: FC<PropsWithChildren<IModalTemplate>> = ({
   return (
     <Modal {...modalProps}>
       {headerDetails && (
-        <Fragment>
-          {/* <UserCard
-            title={headerDetails?.title}
-            subtitle={headerDetails?.subtitle}
-            styleTitle="text-lg"
-            styleSubtitle="!text-tertiary"
-            className={clsx(
-              "gap-x-4 p-6",
-              headerDetails?.subtitle && "!items-start",
-            )}
-            image={
-              <IconWithBg
-                icon={headerDetails?.icon || <SvgFlag stroke="white" />}
-              />
-            }
-          > */}
-          <FaXmark
-            height={24}
-            width={24}
-            stroke={tw.textColor["tertiary"]}
-            className="ml-auto cursor-pointer"
-            onClick={modalProps.close}
-            role="button"
-            tabIndex={0}
-            onKeyDown={() => {}}
+        <div className="flex items-center justify-between border-b border-b-gray-200 p-4">
+          <InfoCluster
+            titleProps={{
+              children: headerDetails?.title,
+              size: "lg",
+              type: "semibold",
+            }}
+            descriptionProps={{
+              children: headerDetails?.subtitle,
+              size: "sm",
+            }}
+            textWrapperClass="!space-y-0"
+            children={<IconWithBg icon={headerDetails?.icon} />}
           />
-          {/* </UserCard> */}
-          <Divider variant="secondary" />
-        </Fragment>
+          <FaXmark
+            size={24}
+            className="ml-auto cursor-pointer text-secondary"
+            onClick={modalProps.close}
+          />
+        </div>
       )}
       {inputProps?.name && (
         <div className="px-6 pt-6 pb-5">
@@ -78,7 +72,7 @@ export const ModalTemplate: FC<PropsWithChildren<IModalTemplate>> = ({
       {btnProps && (
         <div
           className={clsx(
-            "flex p-6 shadow-top w-full gap-x-3 mt-auto",
+            "flex p-4 border-t border-t-gray-200 w-full gap-x-3 mt-auto",
             btnProps.btnWrapperClass,
           )}
         >

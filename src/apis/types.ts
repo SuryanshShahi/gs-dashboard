@@ -80,3 +80,43 @@ export interface IOnboardStudents {
   passportExpiry: string;
   counsellorId: string;
 }
+
+export interface INewApplication {
+  studentId: string;
+  universityId: string;
+  programId: string;
+  intakeMonth: number;
+  intakeYear: number;
+  studyMode: string;
+  scholarshipInterest: boolean;
+  fundingSource: string;
+  partnerNotes: string;
+}
+
+export interface IAddUniversity {
+  name: string;
+  country: string;
+  city?: string;
+  type?: string;
+  qsRanking?: number;
+  logoUrl?: string;
+  website?: string;
+  isActive: boolean;
+}
+
+export interface IAddProgram {
+  name: string;
+  universityId: string;
+  level: string;
+  studyMode: string;
+  duration?: string;
+  tuitionFee: string;
+  currency: string;
+  intakes?: string[];
+  isActive: boolean;
+}
+
+export interface ISelected {
+  label: string;
+  value: string;
+}
