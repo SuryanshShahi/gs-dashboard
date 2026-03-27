@@ -73,15 +73,23 @@ const useHook = ({ close }: { close: () => void }) => {
     validationSchema: addProgramSchema,
     validateOnMount: true,
     onSubmit: (values) => {
+      const name = String(values.name ?? "").trim();
+      const universityId = String(values.universityId ?? "");
+      const level = String(values.level ?? "");
+      const studyMode = String(values.studyMode ?? "");
+      const duration = String(values.duration ?? "").trim();
+      const tuitionFee = String(values.tuitionFee ?? "").trim();
+      const intakesValue = String(values.intakes ?? "");
+
       addProgramMutation({
-        name: values.name.trim(),
-        universityId: values.universityId,
-        level: values.level,
-        studyMode: values.studyMode,
-        duration: values.duration || undefined,
-        tuitionFee: values.tuitionFee,
+        name,
+        universityId,
+        level,
+        studyMode,
+        duration: duration || undefined,
+        tuitionFee,
         currency: "GBP",
-        intakes: values.intakes
+        intakes: intakesValue
           .split(",")
           .map((v) => v.trim())
           .filter(Boolean),
@@ -89,7 +97,7 @@ const useHook = ({ close }: { close: () => void }) => {
       });
     },
   });
-  console.log(formik.errors);
+
   const showError = (field: keyof AddProgramFormValues) =>
     formik.errors[field] && (formik.touched[field] || formik.submitCount > 0)
       ? formik.errors[field]

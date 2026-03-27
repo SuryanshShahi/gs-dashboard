@@ -3,19 +3,19 @@ import { ICountry } from "@/features/masterData/countries/types";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-const useCountries = ({ country, state }: { country: string, state: string }) => {
+const useCountries = ({ country, state }: { country?: string, state?: string }) => {
     const { data: countries } = useQuery<ICountry[]>({
         queryKey: ["countries"],
         queryFn: getCountries,
     });
     const { data: states } = useQuery<{ id: string, name: string }[]>({
         queryKey: ["states", country],
-        queryFn: () => getCountriesStates(country),
+        queryFn: () => getCountriesStates(country ?? ""),
         enabled: !!country,
     });
     const { data: cities } = useQuery<{ id: string, name: string }[]>({
         queryKey: ["cities", state],
-        queryFn: () => getStateCities(state),
+        queryFn: () => getStateCities(state ?? ""),
         enabled: !!state,
     });
     const countriesOptions = useMemo(() => {
