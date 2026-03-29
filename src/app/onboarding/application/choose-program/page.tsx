@@ -5,9 +5,12 @@ import Text from "@/shared/heading/Text";
 import Dropdown from "@/shared/input/Dropdown";
 import clsx from "clsx";
 import useHook from "./useHook";
+import Loader from "@/shared/Loader";
 
 const Page = () => {
-  const { handleSubmit, inputFields } = useHook();
+  const { handleSubmit, inputFields, isLoading } = useHook();
+
+  if (isLoading) return <Loader variant="full-screen" size={30} />;
 
   return (
     <form

@@ -3,14 +3,14 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
+  RowSelectionState,
   SortingState,
   useReactTable,
-  RowSelectionState,
 } from "@tanstack/react-table";
-import { useState } from "react";
 import clsx from "clsx";
+import { useState } from "react";
 import {
   LuChevronDown,
   LuChevronLeft,

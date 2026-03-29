@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useLayoutEffect, useRef, type ChangeEventHandler } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { IoWarningOutline } from "react-icons/io5";
-import { Partner } from "./mockData";
+import type { Partner } from "./types";
 
 /** Passes the native change event through — required for TanStack row/table selection handlers. */
 const CheckboxCell = ({
@@ -139,7 +139,12 @@ export const partnerColumns: ColumnDef<Partner, any>[] = [
     size: 60,
     enableSorting: false,
     cell: () => (
-      <button className="p-1 hover:bg-gray-100 rounded cursor-pointer">
+      <button
+        type="button"
+        className="p-1 hover:bg-gray-100 rounded cursor-pointer"
+        onClick={(e) => e.stopPropagation()}
+        aria-label="More actions"
+      >
         <BsThreeDotsVertical className="w-4 h-4 text-gray-400" />
       </button>
     ),

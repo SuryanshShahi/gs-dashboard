@@ -1,10 +1,16 @@
 "use client";
+import Button from "@/shared/buttons/Button";
 import Img from "@/shared/Img";
 import { ColumnDef } from "@tanstack/react-table";
+import clsx from "clsx";
 import { useLayoutEffect, useRef, type ChangeEventHandler } from "react";
-import { FiEye, FiFileText, FiUserX } from "react-icons/fi";
+import { FiEye, FiFileText } from "react-icons/fi";
 import { IoWarningOutline } from "react-icons/io5";
+import { LuUserRoundCheck, LuUserRoundX } from "react-icons/lu";
 import type { StudentTableRow } from "../types";
+import Text from "@/shared/heading/Text";
+import InfoCluster from "@/shared/InfoCluster";
+import Chip from "@/shared/Chip";
 
 const CheckboxCell = ({
   checked,
@@ -34,7 +40,19 @@ const CheckboxCell = ({
   );
 };
 
-export const studentColumns: ColumnDef<StudentTableRow, any>[] = [
+interface StudentColumnsProps {
+  onArchiveStudent: (studentId: string) => void;
+  isArchiveStudentLoading: boolean;
+  onActivateStudent: (studentId: string) => void;
+  isActivateStudentLoading: boolean;
+}
+
+export const studentColumns = ({
+  onArchiveStudent,
+  isArchiveStudentLoading,
+  onActivateStudent,
+  isActivateStudentLoading,
+}: StudentColumnsProps): ColumnDef<StudentTableRow, any>[] => [
   {
     id: "select",
     size: 40,
@@ -43,8 +61,7 @@ export const studentColumns: ColumnDef<StudentTableRow, any>[] = [
       <CheckboxCell
         checked={table.getIsAllPageRowsSelected()}
         indeterminate={
-          table.getIsSomePageRowsSelected() &&
-          !table.getIsAllPageRowsSelected()
+          table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()
         }
         onChange={table.getToggleAllPageRowsSelectedHandler()}
       />
@@ -60,8 +77,8 @@ export const studentColumns: ColumnDef<StudentTableRow, any>[] = [
     accessorKey: "id",
     header: "Student ID",
     size: 120,
-    cell: ({ getValue }) => (
-      <span className="text-sm text-gray-600">{getValue<string>()}</span>
+    cell: ({ row }) => (
+      <span className="text-sm text-gray-600">{row.original.code}</span>
     ),
   },
   {
@@ -121,10 +138,17 @@ export const studentColumns: ColumnDef<StudentTableRow, any>[] = [
         );
       }
       return (
-        <div className="flex flex-col">
-          <span className="text-sm text-gray-700">{c.name}</span>
-          <span className="text-xs text-gray-500">{c.affiliation}</span>
-        </div>
+        <InfoCluster
+          titleProps={{
+            children: c.name,
+            size: "sm",
+            type: "medium",
+          }}
+          descriptionProps={{
+            children: c.affiliation,
+          }}
+          textWrapperClass="!space-y-0"
+        />
       );
     },
   },
@@ -137,13 +161,23 @@ export const studentColumns: ColumnDef<StudentTableRow, any>[] = [
     ),
   },
   {
-    id: "action",
-    header: () => (
-      <div className="flex justify-end w-full">Action</div>
+    accessorKey: "status",
+    header: "Status",
+    size: 100,
+    cell: ({ row }) => (
+      <Chip
+        title={row.original.status?.toLowerCase()}
+        size="xs"
+        variant={row.original.status === "ARCHIVED" ? "gray" : "success"}
+      />
     ),
+  },
+  {
+    id: "action",
+    header: () => <div className="flex justify-end w-full">Action</div>,
     size: 120,
     enableSorting: false,
-    cell: () => (
+    cell: ({ row }) => (
       <div className="flex items-center justify-end gap-2">
         <button
           className="p-1.5 hover:bg-gray-100 rounded cursor-pointer"
@@ -157,12 +191,36 @@ export const studentColumns: ColumnDef<StudentTableRow, any>[] = [
         >
           <FiFileText className="w-4 h-4 text-gray-500" />
         </button>
-        <button
-          className="p-1.5 hover:bg-gray-100 rounded cursor-pointer"
-          aria-label="Remove"
-        >
-          <FiUserX className="w-4 h-4 text-gray-500" />
-        </button>
+        <Button
+          variant="tertiary"
+          size="xs"
+          className={clsx(
+            "!p-2 !rounded-md",
+            row.original.status === "ARCHIVED"
+              ? "hover:!bg-green-50"
+              : "hover:!bg-red-50",
+          )}
+          icon={
+            row.original.status === "ARCHIVED" ? (
+              <LuUserRoundCheck className="text-green-500" size={16} />
+            ) : (
+              <LuUserRoundX className="text-red-500" size={16} />
+            )
+          }
+          isLoading={
+            row.original.status === "ARCHIVED"
+              ? isActivateStudentLoading
+              : isArchiveStudentLoading
+          }
+          onClick={(e) => {
+            e?.stopPropagation();
+            if (row.original.status === "ARCHIVED") {
+              onActivateStudent(row.original.id ?? "");
+            } else {
+              onArchiveStudent(row.original.id ?? "");
+            }
+          }}
+        />
       </div>
     ),
   },

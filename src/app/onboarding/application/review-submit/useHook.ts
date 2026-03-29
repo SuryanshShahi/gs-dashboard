@@ -1,4 +1,4 @@
-import { newApplication } from "@/apis/apis";
+import { createNewApplication } from "@/apis/apis";
 import { showToast } from "@/shared/ToastMessage";
 import { storageKeys } from "@/utils/enum";
 import { isStoredFileSnapshot } from "@/utils/fileSnapshot";
@@ -7,25 +7,8 @@ import { applicationReviewSchema } from "@/utils/schemas/applicationOnboarding";
 import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
-import {
-  readApplicationOnboarding
-} from "../applicationOnboardingStorage";
-import {
-  COUNTRY_OPTIONS,
-  INTAKE_OPTIONS,
-  LEVEL_OPTIONS,
-  PROGRAM_OPTIONS,
-  STUDY_MODE_OPTIONS,
-  UNIVERSITY_OPTIONS,
-} from "../choose-program/constants";
-import type { ApplicationUploadDocuments } from "../types";
-
-function labelFor(
-  options: { label: string; value: string }[],
-  value: string,
-): string {
-  return options.find((o) => o.value === value)?.label ?? value;
-}
+import { readApplicationOnboarding } from "../applicationOnboardingStorage";
+import { type ApplicationUploadDocuments } from "../types";
 
 export function getDocUploadStatus(
   field: keyof ApplicationUploadDocuments,
@@ -43,30 +26,34 @@ const useHook = () => {
 
   const data = readApplicationOnboarding();
 
-  const {
-    values,
-    errors,
-    touched,
-    handleSubmit,
-    handleChange,
-  } = useFormik({
+  const { values, errors, touched, handleSubmit, handleChange } = useFormik({
     initialValues: {
       confirmed: readApplicationOnboarding().reviewConfirmed ?? false,
     },
     enableReinitialize: true,
     validationSchema: applicationReviewSchema,
     onSubmit: (val) => {
-      // newApplicationMutation({
-      //   studentId: data.selectStudent?.studentId,
-      //   universityId: data.chooseProgram?.university,
-      //   programId: data.chooseProgram?.program,
-      //   intakeMonth: data.chooseProgram?.intake,
-      //   intakeYear: data.chooseProgram?.intake,
-      //   studyMode: data.chooseProgram?.studyMode,
-      //   scholarshipInterest: val.scholarshipInterest,
-      //   fundingSource: val.fundingSource,
-      //   partnerNotes: data.chooseProgram?.notes,
-      // });
+      const country = data.chooseProgram?.country;
+      const uni = data.chooseProgram?.university;
+      const prog = data.chooseProgram?.program;
+      newApplicationMutation({
+        studentId: data.selectStudent?.studentId as string,
+        countryId: Number(country?.value) || undefined,
+        universityId: uni?.value || "",
+        programId: prog?.value || "",
+        intakeMonth: 5,
+        intakeYear: data.chooseProgram?.intake
+          ? Number(data.chooseProgram?.intake)
+          : undefined,
+        studyMode: data.chooseProgram?.studyMode
+          ? data.chooseProgram?.studyMode
+          : undefined,
+        // scholarshipInterest: val.scholarshipInterest ?? false,
+        // fundingSource: val.fundingSource ?? undefined,
+        partnerNotes: data.chooseProgram?.applicationNotes
+          ? data.chooseProgram?.applicationNotes
+          : undefined,
+      });
     },
   });
 
@@ -75,14 +62,12 @@ const useHook = () => {
 
   const programSummary = p
     ? {
-      country: labelFor(COUNTRY_OPTIONS, p.country),
-      intake: labelFor(INTAKE_OPTIONS, p.intake),
-      university: labelFor(UNIVERSITY_OPTIONS, p.university),
-      program: labelFor(PROGRAM_OPTIONS, p.program),
-      level: p.levelOfStudy
-        ? labelFor(LEVEL_OPTIONS, p.levelOfStudy)
-        : "—",
-      mode: p.studyMode ? labelFor(STUDY_MODE_OPTIONS, p.studyMode) : "—",
+      country: p?.country?.label || "—",
+      intake: p?.intake || "—",
+      university: p?.university?.label || "—",
+      program: p?.program?.label || "—",
+      level: p?.levelOfStudy || "—",
+      mode: p?.studyMode || "—",
     }
     : null;
 
@@ -98,25 +83,25 @@ const useHook = () => {
       { key: "workExperienceCv", label: "Work Experience / CV" },
       { key: "additionalSupporting", label: "Additional Supporting" },
     ];
-  const { mutate: newApplicationMutation, isPending: isNewApplicationPending } = useMutation({
-    mutationFn: newApplication,
-    onSuccess: () => {
-      removeLocalItem(storageKeys.APPLICATION_ONBOARDING_DETAILS);
-      showToast({
-        type: "success",
-        title: "Application submitted",
-        subtitle: "Your application has been sent for review.",
-      });
-      router.replace("/applications");
-    },
-    onError: (error) => {
-      showToast({
-        type: "error",
-        title: "Error submitting application",
-        subtitle: error.message,
-      });
-    },
-  });
+  const { mutate: newApplicationMutation, isPending: isNewApplicationPending } =
+    useMutation({
+      mutationFn: createNewApplication,
+      onSuccess: () => {
+        removeLocalItem(storageKeys.APPLICATION_ONBOARDING_DETAILS);
+        showToast({
+          type: "success",
+          title: "Application submitted",
+          subtitle: "Your application has been sent for review.",
+        });
+        router.replace("/applications");
+      },
+      onError: (err: any) => {
+        showToast({
+          type: "error",
+          title: err.response.data.message,
+        });
+      },
+    });
   return {
     handleSubmit,
     student: s,

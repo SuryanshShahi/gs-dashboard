@@ -66,6 +66,7 @@ export interface IStudent {
 /** One row in the students DataTable (mapped from `IStudent`). */
 export interface StudentTableRow {
     id: string;
+    code: string;
     name: string;
     email: string;
     contact: string;
@@ -75,5 +76,6 @@ export interface StudentTableRow {
         affiliation: string;
     } | null;
     applications: number;
+    status: StudentRecordStatus;
 }
 

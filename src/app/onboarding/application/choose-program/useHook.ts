@@ -1,93 +1,101 @@
-import { useFormik } from "formik";
-import { useRouter } from "next/navigation";
-import { useMemo } from "react";
+import type { ISelected } from "@/apis/types";
+import { getPrograms, getUniversities } from "@/apis/apis";
+import { IProgram } from "@/features/masterData/programs/types";
+import { IUniversity } from "@/features/masterData/universities/types";
+import useCountries from "@/utils/hooks/useCountries";
 import { applicationChooseProgramSchema } from "@/utils/schemas/applicationOnboarding";
+import { useQuery } from "@tanstack/react-query";
+import { getIn, useFormik } from "formik";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo } from "react";
 import { persistedString } from "../../partner/partnerOnboardingStorage";
 import {
   readApplicationOnboarding,
   writeApplicationOnboarding,
 } from "../applicationOnboardingStorage";
-import {
-  COUNTRY_OPTIONS,
-  INTAKE_OPTIONS,
-  LEVEL_OPTIONS,
-  PROGRAM_OPTIONS,
-  STUDY_MODE_OPTIONS,
-  UNIVERSITY_OPTIONS,
-} from "./constants";
-import { useQuery } from "@tanstack/react-query";
-import { getUniversities } from "@/apis/apis";
-import { IUniversity } from "@/features/masterData/universities/types";
-import useCountries from "@/utils/hooks/useCountries";
+import { LEVEL_OPTIONS, STUDY_MODE_OPTIONS } from "./constants";
 
 const useHook = () => {
   const router = useRouter();
-  const { countriesOptions } = useCountries({});
-  const { data: universities } = useQuery<IUniversity[]>({
+  const { countriesOptions, isLoadingCountries } = useCountries({});
+  const { data: universities, isLoading: isLoadingUniversities } = useQuery<IUniversity[]>({
     queryKey: ["universities"],
     queryFn: () => getUniversities(),
+  });
+  const { data: programs, isLoading: isLoadingPrograms } = useQuery<IProgram[]>({
+    queryKey: ["programs"],
+    queryFn: () => getPrograms(),
   });
   const universityOptions = useMemo(() => {
     return (
       universities?.map((university) => ({
         label: university.name,
-        value: university.id,
+        value: String(university.id),
       })) ?? []
     );
   }, [universities]);
+  const programOptions = useMemo(() => {
+    return (
+      programs?.map((program) => ({
+        label: program.name,
+        value: String(program.id),
+      })) ?? []
+    );
+  }, [programs]);
   const initialValues = useMemo(() => {
     const p = readApplicationOnboarding().chooseProgram;
     return {
-      country: persistedString(p?.country),
+      country: p?.country,
+      university: p?.university,
+      program: p?.program,
       intake: persistedString(p?.intake),
-      university: persistedString(p?.university),
-      program: persistedString(p?.program),
       levelOfStudy: persistedString(p?.levelOfStudy),
-      studyMode: persistedString(p?.studyMode),
+      studyMode:
+        persistedString(p?.studyMode) || STUDY_MODE_OPTIONS[0]?.value || "",
       applicationNotes: persistedString(p?.applicationNotes),
     };
   }, []);
 
-  const { values, errors, touched, handleChange, handleBlur, handleSubmit } =
-    useFormik({
-      initialValues,
-      enableReinitialize: true,
-      validationSchema: applicationChooseProgramSchema,
-      onSubmit: (submitted) => {
-        writeApplicationOnboarding({ chooseProgram: submitted });
-        router.push("/onboarding/application/upload-documents");
-      },
-    });
+  const {
+    values,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    setFieldValue,
+    setFieldTouched,
+  } = useFormik({
+    initialValues,
+    enableReinitialize: true,
+    validationSchema: applicationChooseProgramSchema,
+    onSubmit: (submitted) => {
+      writeApplicationOnboarding({ chooseProgram: submitted });
+      router.push("/onboarding/application/upload-documents");
+    },
+  });
+
+  const fieldError = (path: string) => {
+    const err = getIn(errors, path);
+    const tch = getIn(touched, path);
+    return tch && err ? String(err) : "";
+  };
 
   const inputFields = [
     {
       label: "Destination",
       fields: [
         {
-          name: "country",
+          name: "country.value",
           label: "Country",
           placeholder: "Select Country",
           type: "select",
           required: true,
-          options: countriesOptions,
-          value: values.country,
-          onChange: handleChange,
+          options: countriesOptions ?? [],
+          value: values.country?.value ?? "",
+          onLabeledChange: (opt: ISelected) => setFieldValue("country", opt),
           onBlur: handleBlur,
-          errorMessage:
-            errors.country && touched.country ? (errors.country as string) : "",
-        },
-        {
-          name: "intake",
-          label: "Intake",
-          placeholder: "Select Intake",
-          type: "select",
-          required: true,
-          options: INTAKE_OPTIONS,
-          value: values.intake,
-          onChange: handleChange,
-          onBlur: handleBlur,
-          errorMessage:
-            errors.intake && touched.intake ? (errors.intake as string) : "",
+          errorMessage: fieldError("country.value"),
         },
       ],
     },
@@ -95,34 +103,50 @@ const useHook = () => {
       label: "Institution",
       fields: [
         {
-          name: "university",
+          name: "university.value",
           label: "University",
           placeholder: "Select University",
           className: "col-span-2",
           type: "select",
           required: true,
           options: universityOptions,
-          value: values.university,
-          onChange: handleChange,
+          value: values.university?.value ?? "",
+          onLabeledChange: (opt: ISelected) => setFieldValue("university", opt),
           onBlur: handleBlur,
-          errorMessage:
-            errors.university && touched.university
-              ? (errors.university as string)
-              : "",
+          errorMessage: fieldError("university.value"),
         },
         {
-          name: "program",
+          name: "program.value",
           label: "Program",
           placeholder: "Select Program",
-          className: "col-span-2",
+          className: "col-span-1",
           type: "select",
           required: true,
-          options: PROGRAM_OPTIONS,
-          value: values.program,
+          options: programOptions,
+          value: values.program?.value ?? "",
+          onLabeledChange: (opt: ISelected) => setFieldValue("program", opt),
+          onBlur: handleBlur,
+          errorMessage: fieldError("program.value"),
+        },
+        {
+          name: "intake",
+          label: "Intake",
+          placeholder: "Select Intake",
+          className: "col-span-1",
+          type: "select",
+          required: true,
+          options:
+            programs
+              ?.find((program) => String(program.id) === values.program?.value)
+              ?.intakes?.map((intake) => ({
+                label: intake,
+                value: intake,
+              })) ?? [],
+          value: values.intake,
           onChange: handleChange,
           onBlur: handleBlur,
           errorMessage:
-            errors.program && touched.program ? (errors.program as string) : "",
+            errors.intake && touched.intake ? (errors.intake as string) : "",
         },
       ],
     },
@@ -183,6 +207,7 @@ const useHook = () => {
   return {
     handleSubmit,
     inputFields,
+    isLoading: isLoadingUniversities || isLoadingPrograms || isLoadingCountries,
   };
 };
 

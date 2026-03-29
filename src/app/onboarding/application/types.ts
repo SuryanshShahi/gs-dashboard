@@ -1,3 +1,4 @@
+import { ISelected } from "@/apis/types";
 import type { StoredFileSnapshot } from "@/utils/fileSnapshot";
 
 export type StoredApplicationFile = string | StoredFileSnapshot;
@@ -10,14 +11,15 @@ export interface ApplicationSelectStudent {
 }
 
 export interface ApplicationChooseProgram {
-  country: string;
+  country: ISelected | undefined;
   intake: string;
-  university: string;
-  program: string;
+  university: ISelected | undefined;
+  program: ISelected | undefined;
   levelOfStudy: string;
   studyMode: string;
   applicationNotes: string;
 }
+
 
 export interface ApplicationUploadDocuments {
   passportCopy?: StoredApplicationFile;

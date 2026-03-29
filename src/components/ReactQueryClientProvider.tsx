@@ -5,6 +5,7 @@ import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 // import useFirebase from "../utils/hooks/useFirebase";
 import { getLocalItem, setLocalItem } from "@/utils/localstorage";
 import { storageKeys } from "@/utils/enum";
+import Loader from "@/shared/Loader";
 export interface IRegisterDevice {
   mode: string;
   identifier: string;
@@ -58,8 +59,14 @@ const ReactQueryClientProvider: FC<PropsWithChildren> = ({ children }) => {
   // useEffect(() => {
   //   register();
   // }, []);
-
-  const contextValue = useMemo(() => ({ data, setData }), [data, setData]);
+  // const contextValue = useMemo(() => ({ data, setData }), [data, setData]);
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+  if (!hasMounted) {
+    return <Loader className="h-screen" size={28} variant="full-screen" />;
+  }
   return (
     <QueryClientProvider client={queryClient}>
       {/* <GlobalContext.Provider value={contextValue}> */}

@@ -36,8 +36,6 @@ export const LEVEL_OPTIONS = [
 ];
 
 export const STUDY_MODE_OPTIONS = [
-  { label: "Select mode", value: "" },
-  { label: "Full-time", value: "full" },
-  { label: "Part-time", value: "part" },
-  { label: "Online", value: "online" },
+  { label: "Full-time", value: "FULL_TIME" },
+  { label: "Part-time", value: "PART_TIME" },
 ];

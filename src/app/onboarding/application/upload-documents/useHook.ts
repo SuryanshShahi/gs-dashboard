@@ -142,33 +142,31 @@ const useHook = () => {
     handleSubmit,
     infoBanner:
       "Upload clear, legible copies. Accepted formats: PDF, JPG, PNG. Max 10MB per file.",
-    requiredDocs: [
+    documentFields: [
       uploadField(
         "passportCopy",
         "Passport Copy",
-        true,
+        false,
         "PDF, JPG, PNG • Max 10MB",
       ),
       uploadField(
         "academicTranscripts",
         "Academic Transcripts",
-        true,
+        false,
         "All semesters/years • PDF • Max 20MB",
       ),
       uploadField(
         "englishProficiency",
         "English Proficiency Test",
-        true,
+        false,
         "IELTS/TOEFL/PTE score report • PDF",
       ),
       uploadField(
         "statementOfPurpose",
         "Statement of Purpose",
-        true,
+        false,
         "PDF • Max 5MB",
       ),
-    ],
-    optionalDocs: [
       uploadField(
         "referenceLetters",
         "Reference / Recommendation Letters",

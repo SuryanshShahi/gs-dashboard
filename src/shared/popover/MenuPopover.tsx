@@ -20,6 +20,7 @@ export type MenuPopoverItem =
       onClick: () => void;
       icon?: ReactNode;
       variant?: "default" | "danger";
+      keepMenuOpen?: boolean;
     }
   | { type: "separator"; id: string };
 
@@ -30,6 +31,7 @@ export interface MenuPopoverProps {
   menuItemsClassName?: string;
   anchor?: MenuItemsAnchor;
   className?: string;
+  onMenuButtonClick?: () => void;
 }
 
 const defaultButtonClasses =
@@ -45,10 +47,14 @@ export default function MenuPopover({
   menuItemsClassName,
   anchor = "bottom end",
   className,
+  onMenuButtonClick,
 }: MenuPopoverProps) {
   return (
     <Menu as="div" className={clsx("relative", className)}>
-      <MenuButton className={clsx(defaultButtonClasses, menuButtonClassName)}>
+      <MenuButton
+        className={clsx(defaultButtonClasses, menuButtonClassName)}
+        onClick={() => onMenuButtonClick?.()}
+      >
         {children}
       </MenuButton>
 
@@ -67,12 +73,45 @@ export default function MenuPopover({
 
           const danger = entry.variant === "danger";
 
+          // Headless `MenuItem` always closes the menu on activate; drill-in rows must
+          // not use it — plain `role="menuitem"` buttons skip that behavior.
+          if (entry.keepMenuOpen) {
+            return (
+              <button
+                key={entry.id}
+                type="button"
+                role="menuitem"
+                tabIndex={-1}
+                onClick={() => entry.onClick()}
+                className={clsx(
+                  "flex w-full items-center gap-2 px-4 py-2 text-left text-sm cursor-pointer outline-none",
+                  "text-gray-700 hover:bg-gray-50 focus-visible:bg-gray-50",
+                )}
+              >
+                {entry.icon != null && (
+                  <span
+                    className={clsx(
+                      "shrink-0 [&_svg]:h-4 [&_svg]:w-4",
+                      "text-gray-500",
+                    )}
+                  >
+                    {entry.icon}
+                  </span>
+                )}
+                {entry.label}
+              </button>
+            );
+          }
+
           return (
             <MenuItem key={entry.id}>
-              {({ focus }) => (
+              {({ focus, close }) => (
                 <button
                   type="button"
-                  onClick={entry.onClick}
+                  onClick={() => {
+                    entry.onClick();
+                    close();
+                  }}
                   className={clsx(
                     "flex w-full items-center gap-2 px-4 py-2 text-left text-sm cursor-pointer",
                     danger ? "text-red-600" : "text-gray-700",

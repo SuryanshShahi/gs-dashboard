@@ -14,6 +14,9 @@ import {
   ISendOtp,
   IVerifyOtp,
 } from "./types";
+import { IUpdateProgram } from "@/features/masterData/programs/types";
+import { IUpdateUniversity } from "@/features/masterData/universities/types";
+import { ISubmitApplication } from "./types";
 
 /** @deprecated Prefer refreshAccessTokenRequest from ./authRefresh */
 export const getRefreshAccessToken = async () => {
@@ -88,7 +91,6 @@ export const getStudents = async (search?: string) => {
   return res?.data ?? {};
 };
 
-
 export const onboardStudents = async (payload: IOnboardStudents) => {
   const res = await axiosInstance().post(API_CONSTANTS.onboardStudents, payload);
   return res?.data?.data ?? {};
@@ -96,6 +98,16 @@ export const onboardStudents = async (payload: IOnboardStudents) => {
 
 export const getStudentPartnerRms = async () => {
   const res = await axiosInstance().get(API_CONSTANTS.getStudentPartnerRms);
+  return res?.data?.data ?? {};
+};
+
+export const archiveStudent = async (studentId: string) => {
+  const res = await axiosInstance().patch(API_CONSTANTS.archiveStudent(studentId));
+  return res?.data?.data ?? {};
+};
+
+export const activateStudent = async (studentId: string) => {
+  const res = await axiosInstance().patch(API_CONSTANTS.activateStudent(studentId));
   return res?.data?.data ?? {};
 };
 // --------------------------------------------------------------------------------------
@@ -128,13 +140,22 @@ export const addUniversity = async (payload: IAddUniversity) => {
   return res?.data?.data ?? {};
 };
 
+export const updateUniversity = async (universityId: string, payload: IUpdateUniversity) => {
+  const res = await axiosInstance().patch(API_CONSTANTS.updateUniversity(universityId), payload);
+  return res?.data?.data ?? {};
+};
+
+export const removeUniversity = async (universityId: string) => {
+  const res = await axiosInstance().delete(API_CONSTANTS.removeUniversity(universityId));
+  return res?.data?.data ?? {};
+};
 
 // --------------------------------------------------------------------------------------
 // -------------------------------------- Programs --------------------------------------
 // --------------------------------------------------------------------------------------
 
-export const getPrograms = async () => {
-  const res = await axiosInstance().get(API_CONSTANTS.getPrograms);
+export const getPrograms = async (search?: string) => {
+  const res = await axiosInstance().get(API_CONSTANTS.getPrograms(search));
   return res?.data?.data ?? {};
 };
 
@@ -143,13 +164,26 @@ export const addProgram = async (payload: IAddProgram) => {
   return res?.data?.data ?? {};
 };
 
+export const updateProgram = async (programId: string, payload: IUpdateProgram) => {
+  const res = await axiosInstance().patch(API_CONSTANTS.updateProgram(programId), payload);
+  return res?.data?.data ?? {};
+};
+
+export const removeProgram = async (programId: string) => {
+  const res = await axiosInstance().delete(API_CONSTANTS.removeProgram(programId));
+  return res?.data?.data ?? {};
+};
+
 // --------------------------------------------------------------------------------------
 // ------------------------------------ Applications ------------------------------------
 // --------------------------------------------------------------------------------------
 
-export const newApplication = async (payload: INewApplication) => {
-  const res = await axiosInstance().post(API_CONSTANTS.newApplication, payload);
+export const createNewApplication = async (payload: INewApplication) => {
+  const res = await axiosInstance().post(API_CONSTANTS.createNewApplication, payload);
   return res?.data?.data ?? {};
 };
 
-
+export const getApplications = async (search?: string) => {
+  const res = await axiosInstance().get(API_CONSTANTS.getApplications(search));
+  return res?.data?.data ?? {};
+};

@@ -1,10 +1,12 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { applicationsMockData } from "./mockData";
 import type { ApplicationRecord, ApplicationTabFilter } from "./types";
 import {
   APPROVED_STAGES,
   UNDER_REVIEW_STAGES,
 } from "./types";
+import { getApplications } from "@/apis/apis";
+import { useQuery } from "@tanstack/react-query";
 
 export function applicationMatchesTab(
   row: ApplicationRecord,
@@ -39,7 +41,11 @@ function computeStats(rows: ApplicationRecord[]): ApplicationStats {
 
 const useHook = () => {
   const applications = applicationsMockData;
-
+  const [search, setSearch] = useState("");
+  const { data: application, isLoading, isError, error } = useQuery({
+    queryKey: ["applications", search],
+    queryFn: () => getApplications(search),
+  });
   const stats: ApplicationStats = useMemo(
     () => computeStats(applications),
     [applications],

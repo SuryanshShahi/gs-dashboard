@@ -1,13 +1,18 @@
 export type UniversityStatus = "ACTIVE" | "INACTIVE";
 
-export type UniversityType = "Public" | "Private";
-
 /** Row for the Universities master data table. */
 export interface IUniversity {
   id: string;
   name: string;
-  city: string;
-  country: string;
+  city: {
+    id: string;
+    name: string;
+  };
+  country: {
+    id: string;
+    name: string;
+  };
+  type: string
   logoUrl: string | null;
   website: string;
   contactEmail: string | null;
@@ -25,8 +30,21 @@ export interface UniversityTableRow {
   city: string;
   countryName: string;
   flagEmoji: string;
-  type: UniversityType;
+  type: string;
   qsRanking: number;
   programs: number;
   status: UniversityStatus;
+  isActive: boolean;
+  website?: string;
+}
+
+export interface IUpdateUniversity {
+  name?: string;
+  country?: number;
+  city?: number;
+  type?: string;
+  qsRanking?: number;
+  logoUrl?: string;
+  website?: string;
+  isActive?: boolean;
 }

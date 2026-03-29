@@ -7,7 +7,7 @@ import { FiInfo } from "react-icons/fi";
 import useHook from "./useHook";
 
 const Page = () => {
-  const { handleSubmit, infoBanner, requiredDocs, optionalDocs } = useHook();
+  const { handleSubmit, infoBanner, documentFields } = useHook();
 
   return (
     <form
@@ -34,30 +34,15 @@ const Page = () => {
         <p>{infoBanner}</p>
       </div>
 
-      <div className="space-y-8 mt-8">
-        <div className="space-y-4">
-          <div className="flex flex-wrap items-baseline gap-2">
-            <Text variant="brand" type="semibold" size="sm">
-              Required Documents
-            </Text>
-            <span className="text-xs text-red-500">* All fields are required</span>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {requiredDocs.map((f) => (
-              <UploadFile key={f.name} variant="document" {...f} />
-            ))}
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <Text variant="brand" type="semibold" size="sm">
-            Optional Documents
-          </Text>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {optionalDocs.map((f) => (
-              <UploadFile key={f.name} variant="document" {...f} />
-            ))}
-          </div>
+      <div className="space-y-4 mt-8">
+        <Text variant="brand" type="semibold" size="sm">
+          Documents
+        </Text>
+        <p className="text-xs text-gray-500">All document uploads are optional.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {documentFields.map((f) => (
+            <UploadFile key={f.name} variant="document" {...f} />
+          ))}
         </div>
       </div>
     </form>

@@ -1,8 +1,11 @@
 import clsx from "clsx";
-import { ReactNode, SelectHTMLAttributes } from "react";
+import { ChangeEvent, ReactNode, SelectHTMLAttributes } from "react";
 import { FiAlertCircle, FiChevronDown } from "react-icons/fi";
 
-export interface IDropdown extends SelectHTMLAttributes<HTMLSelectElement> {
+export type DropdownLabeledOption = { label: string; value: string };
+
+export interface IDropdown
+  extends Omit<SelectHTMLAttributes<HTMLSelectElement>, "onChange"> {
   label?: string;
   className?: string;
   wrapperClass?: string;
@@ -11,6 +14,12 @@ export interface IDropdown extends SelectHTMLAttributes<HTMLSelectElement> {
   required?: boolean;
   options?: { label: string; value: string }[];
   placeholder?: string;
+  onChange?: SelectHTMLAttributes<HTMLSelectElement>["onChange"];
+  /**
+   * When set, the select calls this with `{ label, value }` from `options` instead of
+   * using the native string `onChange`. Use with Formik `setFieldValue` for object fields.
+   */
+  onLabeledChange?: (option: DropdownLabeledOption) => void;
 }
 
 const Dropdown = ({
@@ -24,10 +33,26 @@ const Dropdown = ({
   placeholder,
   value,
   defaultValue,
+  onChange,
+  onLabeledChange,
   ...rest
 }: IDropdown) => {
   const looksEmpty =
     value !== undefined ? !value : !(defaultValue ?? "");
+
+  const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const v = e.target.value;
+    if (onLabeledChange) {
+      // Select `value` is always a string; option.value may be number from API data — compare coerced.
+      const opt = options.find((o) => String(o.value) === v);
+      onLabeledChange({
+        value: v,
+        label: opt?.label ?? "",
+      });
+      return;
+    }
+    onChange?.(e);
+  };
 
   return (
     <div className={clsx("flex flex-col gap-y-1", wrapperClass)}>
@@ -48,6 +73,7 @@ const Dropdown = ({
             className,
           )}
           {...rest}
+          onChange={handleChange}
           {...(value !== undefined
             ? { value }
             : { defaultValue: defaultValue ?? "" })}

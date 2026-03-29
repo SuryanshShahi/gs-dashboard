@@ -1,13 +1,14 @@
-import {
-    addUniversity
-} from "@/apis/apis";
+import { addUniversity, getCountries, updateUniversity } from "@/apis/apis";
+import type { ICountry } from "@/features/masterData/countries/types";
 import type { IDropdown } from "@/shared/input/Dropdown";
 import type { IInputField } from "@/shared/input/InputField";
 import { showToast } from "@/shared/ToastMessage";
 import useCountries from "@/utils/hooks/useCountries";
 import { addUniversitySchema } from "@/utils/schemas/masterData";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useFormik } from "formik";
+import { useMemo, useRef } from "react";
+import { IUpdateUniversity, UniversityTableRow } from "../types";
 
 export type AddUniversityFormValues = {
     name: string;
@@ -22,14 +23,14 @@ export type AddUniversityFormValues = {
 
 export type AddUniversityInputField =
     | ({
-        type: "select";
-        className: string;
-        options: NonNullable<IDropdown["options"]>;
-        placeholder?: string;
-    } & Omit<IDropdown, "options" | "type">)
+          type: "select";
+          className: string;
+          options: NonNullable<IDropdown["options"]>;
+          placeholder?: string;
+      } & Omit<IDropdown, "options" | "type">)
     | ({ className: string } & IInputField);
 
-const initialValues: AddUniversityFormValues = {
+const defaultFormValues: AddUniversityFormValues = {
     name: "",
     country: "",
     state: "",
@@ -40,12 +41,56 @@ const initialValues: AddUniversityFormValues = {
     status: "ACTIVE",
 };
 
-const useHook = ({ close }: { close: () => void }) => {
+const useHook = ({
+    close,
+    selectedUniversity,
+}: {
+    close: () => void;
+    selectedUniversity: UniversityTableRow | null;
+}) => {
     const queryClient = useQueryClient();
+    const formikRef = useRef<ReturnType<typeof useFormik<AddUniversityFormValues>> | null>(
+        null,
+    );
+
+    const { data: countries } = useQuery<ICountry[]>({
+        queryKey: ["countries"],
+        queryFn: getCountries,
+    });
+
+    const resolvedCountryId = useMemo(() => {
+        const list = Array.isArray(countries) ? countries : [];
+        if (!selectedUniversity || !list.length) return "";
+        const raw = selectedUniversity.countryName?.trim();
+        if (!raw) return "";
+        const byName = list.find((c) => c.name === raw);
+        if (byName) return byName.id;
+        return list.find((c) => c.id === raw)?.id ?? "";
+    }, [selectedUniversity, countries]);
+
+    const formInitialValues = useMemo<AddUniversityFormValues>(() => {
+        if (!selectedUniversity) {
+            return { ...defaultFormValues };
+        }
+        return {
+            name: selectedUniversity.name,
+            country: resolvedCountryId,
+            state: "",
+            city: "",
+            type: selectedUniversity.type,
+            qsRanking:
+                selectedUniversity.qsRanking > 0
+                    ? String(selectedUniversity.qsRanking)
+                    : "",
+            website: selectedUniversity.website ?? "",
+            status: selectedUniversity.status,
+        };
+    }, [selectedUniversity, resolvedCountryId]);
+
     const { mutate: addUniversityMutation, isPending } = useMutation({
         mutationFn: addUniversity,
         onSuccess: () => {
-            formik.resetForm();
+            formikRef.current?.resetForm();
             queryClient.invalidateQueries({ queryKey: ["universities"] });
             showToast({
                 type: "success",
@@ -61,23 +106,72 @@ const useHook = ({ close }: { close: () => void }) => {
             });
         },
     });
-
-    const formik = useFormik<AddUniversityFormValues>({
-        initialValues,
-        validationSchema: addUniversitySchema,
-        validateOnMount: true,
-        onSubmit: (values) => {
-            addUniversityMutation({
-                name: values.name.trim(),
-                country: values.country,
-                city: values.city,
-                type: values.type,
-                qsRanking: values.qsRanking ? Number(values.qsRanking) : undefined,
-                website: values.website.trim() || undefined,
-                isActive: values.status === "ACTIVE",
+    const {
+        mutate: updateUniversityMutation,
+        isPending: isUpdateUniversityPending,
+    } = useMutation({
+        mutationFn: ({
+            universityId,
+            payload,
+        }: {
+            universityId: string;
+            payload: IUpdateUniversity;
+        }) => updateUniversity(universityId, payload),
+        onSuccess: () => {
+            formikRef.current?.resetForm();
+            queryClient.invalidateQueries({ queryKey: ["universities"] });
+            showToast({
+                type: "success",
+                title: "University details updated successfully.",
+            });
+            close();
+        },
+        onError: (err: any) => {
+            showToast({
+                type: "error",
+                title: "Something went wrong!",
+                subtitle: err?.response?.data?.message,
             });
         },
     });
+
+    const formik = useFormik<AddUniversityFormValues>({
+        initialValues: formInitialValues,
+        enableReinitialize: true,
+        validationSchema: addUniversitySchema,
+        validateOnMount: true,
+        onSubmit: (values) => {
+            const payload: IUpdateUniversity = {
+                name: values.name.trim(),
+                country: Number(values.country),
+                city: Number(values.city),
+                type: values.type,
+                qsRanking: values.qsRanking
+                    ? Number(values.qsRanking)
+                    : undefined,
+                website: values.website.trim() || undefined,
+                isActive: values.status === "ACTIVE",
+            };
+            if (selectedUniversity) {
+                updateUniversityMutation({
+                    universityId: selectedUniversity.id,
+                    payload,
+                });
+            } else {
+                addUniversityMutation({
+                    name: payload.name!,
+                    countryId: Number(payload.country!),
+                    cityId: Number(payload.city),
+                    type: payload.type,
+                    qsRanking: payload.qsRanking,
+                    website: payload.website,
+                    isActive: payload.isActive ?? true,
+                });
+            }
+        },
+    });
+
+    formikRef.current = formik;
 
     const { countriesOptions, statesOptions, citiesOptions } = useCountries({
         country: formik.values.country,
@@ -203,6 +297,8 @@ const useHook = ({ close }: { close: () => void }) => {
         isSubmitDisabled,
         resetForm: formik.resetForm,
         isPending,
+        updateUniversityMutation,
+        isUpdateUniversityPending,
     };
 };
 

@@ -3,9 +3,13 @@
 import Chip from "@/shared/Chip";
 import { ColumnDef } from "@tanstack/react-table";
 import { useLayoutEffect, useRef, type ChangeEventHandler } from "react";
+import Switcher from "@/shared/input/Switcher";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
-import { LuToggleLeft } from "react-icons/lu";
-import type { UniversityTableRow } from "./types";
+import type {
+  IUniversity,
+  IUpdateUniversity,
+  UniversityTableRow,
+} from "./types";
 import Text from "@/shared/heading/Text";
 import Button from "@/shared/buttons/Button";
 import clsx from "clsx";
@@ -38,7 +42,29 @@ const CheckboxCell = ({
   );
 };
 
-export const universityColumns: ColumnDef<UniversityTableRow, unknown>[] = [
+export const universityColumns = ({
+  updateUniversityMutation,
+  pendingUpdateUniversityId,
+  setSelectedUniversity,
+  removeUniversityMutation,
+  pendingRemoveUniversityId,
+}: {
+  updateUniversityMutation: ({
+    universityId,
+    payload,
+  }: {
+    universityId: string;
+    payload: IUpdateUniversity;
+  }) => void;
+  pendingUpdateUniversityId: string | null;
+  setSelectedUniversity: (university: UniversityTableRow) => void;
+  removeUniversityMutation: ({
+    universityId,
+  }: {
+    universityId: string;
+  }) => void;
+  pendingRemoveUniversityId: string | null;
+}): ColumnDef<UniversityTableRow, unknown>[] => [
   {
     id: "select",
     size: 40,
@@ -141,33 +167,45 @@ export const universityColumns: ColumnDef<UniversityTableRow, unknown>[] = [
     header: () => <div className="flex justify-end w-full">Actions</div>,
     size: 120,
     enableSorting: false,
-    cell: () => (
+    cell: ({ row }) => (
       <div
-        className="flex items-center justify-end"
+        className="flex items-center justify-end gap-1"
         onClick={(e) => e.stopPropagation()}
       >
-        {[
-          {
-            icon: <FiEdit2 className="text-gray-500" />,
-            className: "hover:!bg-gray-100",
-          },
-          {
-            icon: <LuToggleLeft className="text-blue-500" />,
-            className: "hover:!bg-blue-50",
-          },
-          {
-            icon: <FiTrash2 className="text-red-500" />,
-            className: "hover:!bg-red-50",
-          },
-        ].map((item, idx) => (
-          <Button
-            key={idx}
-            variant="tertiary"
+        <Button
+          variant="tertiary"
+          size="xs"
+          className={clsx("!p-2 !rounded-md", "hover:!bg-gray-100")}
+          icon={<FiEdit2 className="text-gray-500" />}
+          onClick={() => setSelectedUniversity(row.original)}
+        />
+        <div className="flex items-center px-0.5" onClick={(e) => e.stopPropagation()}>
+          <Switcher
             size="xs"
-            className={clsx("!p-2 !rounded-md", item.className)}
-            icon={item.icon}
+            checked={row.original.isActive}
+            onChange={(next) => {
+              if (next !== row.original.isActive) {
+                updateUniversityMutation({
+                  universityId: row.original.id,
+                  payload: { isActive: next },
+                });
+              }
+            }}
+            disabled={pendingUpdateUniversityId === row.original.id}
           />
-        ))}
+        </div>
+        <Button
+          variant="tertiary"
+          size="xs"
+          className={clsx("!p-2 !rounded-md", "hover:!bg-red-50")}
+          icon={<FiTrash2 className="text-red-500" />}
+          isLoading={pendingRemoveUniversityId === row.original.id}
+          onClick={() =>
+            removeUniversityMutation({
+              universityId: row.original.id,
+            })
+          }
+        />
       </div>
     ),
   },

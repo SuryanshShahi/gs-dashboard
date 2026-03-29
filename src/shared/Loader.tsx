@@ -7,18 +7,20 @@ export default function Loader({
   type,
   wrapperClass,
   height,
+  size = 18,
 }: {
   variant?: "default" | "full-screen";
   className?: string;
   wrapperClass?: string;
   height?: number;
   type?: "bounce";
+  size?: number;
 }) {
   return type === "bounce" ? (
     <div
       className={clsx(
         "flex items-center justify-center space-x-2",
-        wrapperClass
+        wrapperClass,
       )}
     >
       <span className="onl sr-only">Loading...</span>
@@ -33,12 +35,12 @@ export default function Loader({
           "flex h-full w-full items-center justify-center":
             variant === "full-screen",
         },
-        wrapperClass
+        wrapperClass,
       )}
       style={{ height: height ? `calc(100vh - ${height}px)` : "" }}
     >
       <AiOutlineLoading3Quarters
-        size={18}
+        size={size}
         className={clsx("mx-auto animate-spin", className)}
       />
     </div>

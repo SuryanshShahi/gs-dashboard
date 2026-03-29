@@ -3,13 +3,15 @@ import Button from "@/shared/buttons/Button";
 import Text from "@/shared/heading/Text";
 import Img from "@/shared/Img";
 import ConfirmationModal from "@/shared/modal/ConfirmationModal";
+import { storageKeys } from "@/utils/enum";
 import { extractText } from "@/utils/functions";
 import useWindowDimensions from "@/utils/hooks/useWindowDimension";
+import { getLocalItem } from "@/utils/localstorage";
 import { drawerMenuItems } from "@/utils/static";
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { FaXmark } from "react-icons/fa6";
 import { IoIosArrowDown } from "react-icons/io";
 
@@ -22,23 +24,33 @@ const SideBar = ({
 }) => {
   const pathname = usePathname();
   const router = useRouter();
-  const routes = pathname.split("/")?.splice(1);
   const [isOpen, setIsOpen] = useState("");
 
   const { width } = useWindowDimensions();
+  /** Defer localStorage to after mount so SSR/first client paint match (avoids hydration errors). */
+  const [userRole, setUserRole] = useState<string | null>(null);
+  useEffect(() => {
+    setUserRole(getLocalItem(storageKeys.SELECTED_USER_ROLE));
+  }, []);
 
-  const drawerItems = drawerMenuItems();
-  const allItems = Object.values(drawerItems).flat();
-  const checkIfMenuItems = () =>
-    Boolean(
-      allItems.find(
-        (e) =>
-          e.key === routes?.[0] ||
-          e?.menuItems?.map((r: any) => r.key).includes(routes?.[0]),
-      )?.menuItems,
+  const drawerItems = drawerMenuItems(userRole ?? "");
+
+  const [showItems, setShowItems] = useState(false);
+  useEffect(() => {
+    const segments = pathname.split("/").slice(1);
+    const allItems = Object.values(drawerMenuItems(userRole ?? "")).flat();
+    setShowItems(
+      Boolean(
+        allItems.find(
+          (e) =>
+            e.key === segments[0] ||
+            e?.menuItems
+              ?.map((r: { key: string }) => r.key)
+              .includes(segments[0]),
+        )?.menuItems,
+      ),
     );
-
-  const [showItems, setShowItems] = useState(checkIfMenuItems);
+  }, [userRole, pathname]);
 
   return (
     <>

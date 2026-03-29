@@ -7,12 +7,21 @@ import MenuPopover, {
 import clsx from "clsx";
 import { usePathname, useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
-import { FiBell, FiLogOut, FiSearch } from "react-icons/fi";
-import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
+import { FiBell, FiCheck, FiLogOut, FiSearch } from "react-icons/fi";
+import {
+  IoIosArrowBack,
+  IoIosArrowDown,
+  IoIosArrowForward,
+} from "react-icons/io";
 import { LuRefreshCw } from "react-icons/lu";
 import { extractText } from "@/utils/functions";
 import { storageKeys } from "@/utils/enum";
-import { clearLocalStorage, removeLocalItem } from "@/utils/localstorage";
+import {
+  clearLocalStorage,
+  clearLocalStorageExcept,
+  getLocalItem,
+  setLocalItem,
+} from "@/utils/localstorage";
 import { IBreadCrumbs } from "@/utils/types";
 import { RiHome6Line } from "react-icons/ri";
 import { removeCookie } from "@/utils/cookies";
@@ -20,13 +29,28 @@ import ConfirmationModal from "@/shared/modal/ConfirmationModal";
 
 const DEFAULT_USER = {
   name: "Suryansh Shokeen",
-  role: "GS Admin",
   initials: "SS",
 };
+
+/** UI-only labels for the role switcher (wire-up later). */
+const SWITCH_ROLE_OPTIONS = [
+  { id: "gs_admin", label: "GS Admin" },
+  { id: "gs_relationship_manager", label: "GS Relationship Manager" },
+  { id: "partner_admin", label: "Partner Admin" },
+  { id: "partner_counsellor", label: "Partner Counsellor" },
+] as const;
 
 const Header = ({ breadCrumbs }: { breadCrumbs?: IBreadCrumbs[] }) => {
   const router = useRouter();
   const pathName = usePathname();
+  const [activeRoleId, setActiveRoleId] = useState<
+    (typeof SWITCH_ROLE_OPTIONS)[number]["id"]
+  >(
+    getLocalItem(
+      storageKeys.SELECTED_USER_ROLE,
+    ) as (typeof SWITCH_ROLE_OPTIONS)[number]["id"],
+  );
+  const [userMenuStep, setUserMenuStep] = useState<"main" | "roles">("main");
   const data: IBreadCrumbs[] = breadCrumbs?.length
     ? breadCrumbs
     : [pathName?.split("/")?.[1]].map((e) => ({
@@ -38,32 +62,80 @@ const Header = ({ breadCrumbs }: { breadCrumbs?: IBreadCrumbs[] }) => {
     clearLocalStorage();
     removeCookie(storageKeys.ACCESS_TOKEN);
     removeCookie(storageKeys.REFRESH_TOKEN);
-    router.push("/login");
+    router.replace("/login");
   };
 
-  const handleSwitchRole = () => {
-    router.push("/settings");
+  const handleSelectRole = (
+    roleId: (typeof SWITCH_ROLE_OPTIONS)[number]["id"],
+  ) => {
+    if (activeRoleId === roleId) return;
+    setActiveRoleId(roleId);
+    setLocalItem(storageKeys.SELECTED_USER_ROLE, roleId);
+    clearLocalStorageExcept([storageKeys.SELECTED_USER_ROLE]);
+    removeCookie(storageKeys.ACCESS_TOKEN);
+    removeCookie(storageKeys.REFRESH_TOKEN);
+    router.replace("/login");
   };
 
-  const userMenuItems: MenuPopoverItem[] = [
-    {
-      type: "item",
-      id: "switch-role",
-      label: "Switch role",
-      onClick: handleSwitchRole,
-      icon: <LuRefreshCw />,
-      variant: "default",
-    },
-    { type: "separator", id: "after-switch-role" },
-    {
-      type: "item",
-      id: "logout",
-      label: "Logout",
-      onClick: () => setIsOpen(true),
-      icon: <FiLogOut />,
-      variant: "danger",
-    },
-  ];
+  const activeRoleLabel =
+    SWITCH_ROLE_OPTIONS.find((r) => r.id === activeRoleId)?.label ?? "GS Admin";
+
+  const userMenuItems: MenuPopoverItem[] =
+    userMenuStep === "main"
+      ? [
+          {
+            type: "item",
+            id: "switch-role",
+            label: "Switch role",
+            onClick: () => setUserMenuStep("roles"),
+            icon: <LuRefreshCw />,
+            variant: "default",
+            keepMenuOpen: true,
+          },
+          { type: "separator", id: "after-switch-role" },
+          {
+            type: "item",
+            id: "logout",
+            label: "Logout",
+            onClick: () => setIsOpen(true),
+            icon: <FiLogOut />,
+            variant: "danger",
+          },
+        ]
+      : [
+          {
+            type: "item",
+            id: "back-roles",
+            label: "Back",
+            onClick: () => setUserMenuStep("main"),
+            icon: <IoIosArrowBack className="text-gray-500" />,
+            variant: "default",
+            keepMenuOpen: true,
+          },
+          { type: "separator", id: "after-back" },
+          ...SWITCH_ROLE_OPTIONS.map((role) => ({
+            type: "item" as const,
+            id: `role-${role.id}`,
+            label: role.label,
+            onClick: () => handleSelectRole(role.id),
+            icon:
+              activeRoleId === role.id ? (
+                <FiCheck className="text-gray-900" aria-hidden />
+              ) : (
+                <span className="inline-block w-4 shrink-0" aria-hidden />
+              ),
+            variant: "default" as const,
+          })),
+          { type: "separator", id: "after-roles" },
+          {
+            type: "item",
+            id: "logout",
+            label: "Logout",
+            onClick: () => setIsOpen(true),
+            icon: <FiLogOut />,
+            variant: "danger",
+          },
+        ];
 
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -113,14 +185,18 @@ const Header = ({ breadCrumbs }: { breadCrumbs?: IBreadCrumbs[] }) => {
 
         <div className="h-8 w-px shrink-0 bg-gray-200" aria-hidden />
 
-        <MenuPopover items={userMenuItems}>
+        <MenuPopover
+          items={userMenuItems}
+          menuItemsClassName="min-w-[min(100vw-2rem,18rem)] w-max max-w-[20rem]"
+          onMenuButtonClick={() => setUserMenuStep("main")}
+        >
           <InfoCluster
             titleProps={{
               children: DEFAULT_USER.name,
               size: "sm",
             }}
             descriptionProps={{
-              children: DEFAULT_USER.role,
+              children: activeRoleLabel,
               className: "text-left",
             }}
             textWrapperClass="!space-y-[2px]"

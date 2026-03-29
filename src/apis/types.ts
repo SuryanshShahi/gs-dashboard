@@ -83,20 +83,22 @@ export interface IOnboardStudents {
 
 export interface INewApplication {
   studentId: string;
+  /** Destination country (master-data id), same pattern as university/program. */
+  countryId?: number;
   universityId: string;
   programId: string;
-  intakeMonth: number;
-  intakeYear: number;
-  studyMode: string;
-  scholarshipInterest: boolean;
-  fundingSource: string;
-  partnerNotes: string;
+  intakeMonth?: number;
+  intakeYear?: number;
+  studyMode?: string;
+  scholarshipInterest?: boolean;
+  fundingSource?: string;
+  partnerNotes?: string;
 }
 
 export interface IAddUniversity {
   name: string;
-  country: string;
-  city?: string;
+  countryId: number;
+  cityId?: number;
   type?: string;
   qsRanking?: number;
   logoUrl?: string;
@@ -119,4 +121,16 @@ export interface IAddProgram {
 export interface ISelected {
   label: string;
   value: string;
+}
+
+export interface ISubmitApplication {
+  studentId: string;
+  universityId: string;
+  programId: string;
+  intakeMonth: number;
+  intakeYear: number;
+  studyMode: string;
+  scholarshipInterest: boolean;
+  fundingSource: string;
+  partnerNotes: string;
 }

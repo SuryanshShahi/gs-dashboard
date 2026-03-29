@@ -1,10 +1,11 @@
-import { FaRegFolderOpen } from "react-icons/fa";
+import { FaArrowLeft, FaRegFolderOpen } from "react-icons/fa";
 import { FaCircleCheck } from "react-icons/fa6";
 import { FiHeadphones } from "react-icons/fi";
 import { LuClipboardList, LuLayoutGrid, LuSettings } from "react-icons/lu";
 import { PiUsersBold } from "react-icons/pi";
 import { RiFolderUserLine, RiShieldStarLine } from "react-icons/ri";
 import React from "react";
+import Img from "@/shared/Img";
 
 export const authSliderData = [
   {
@@ -45,9 +46,12 @@ export interface DrawerMenuItem {
   key: string;
   disabled: boolean;
   menuItems?: DrawerMenuItem[];
+  allowedRoles?: string[];
 }
 
-export const drawerMenuItems = (): Record<string, DrawerMenuItem[]> => {
+export const drawerMenuItems = (
+  userRole: string,
+): Record<string, DrawerMenuItem[]> => {
   const iconColor = "var(--secondary)";
   return {
     "main-menu": [
@@ -58,6 +62,12 @@ export const drawerMenuItems = (): Record<string, DrawerMenuItem[]> => {
         ),
         key: "overview",
         disabled: false,
+        allowedRoles: [
+          "gs_admin",
+          "gs_relationship_manager",
+          "partner_admin",
+          "partner_counsellor",
+        ],
       },
       {
         title: "Partners",
@@ -66,6 +76,7 @@ export const drawerMenuItems = (): Record<string, DrawerMenuItem[]> => {
         ),
         key: "partners",
         disabled: false,
+        allowedRoles: ["gs_admin", "gs_relationship_manager"],
       },
       {
         title: "Students",
@@ -74,6 +85,12 @@ export const drawerMenuItems = (): Record<string, DrawerMenuItem[]> => {
         ),
         key: "students",
         disabled: false,
+        allowedRoles: [
+          "gs_admin",
+          "gs_relationship_manager",
+          "partner_admin",
+          "partner_counsellor",
+        ],
       },
       {
         title: "Applications",
@@ -82,6 +99,12 @@ export const drawerMenuItems = (): Record<string, DrawerMenuItem[]> => {
         ),
         key: "applications",
         disabled: false,
+        allowedRoles: [
+          "gs_admin",
+          "gs_relationship_manager",
+          "partner_admin",
+          "partner_counsellor",
+        ],
       },
       {
         title: "Master Data",
@@ -90,6 +113,7 @@ export const drawerMenuItems = (): Record<string, DrawerMenuItem[]> => {
         ),
         key: "master-data",
         disabled: false,
+        allowedRoles: ["gs_admin"],
         menuItems: [
           {
             title: "Countries",
@@ -136,8 +160,18 @@ export const drawerMenuItems = (): Record<string, DrawerMenuItem[]> => {
         ),
         key: "teams",
         disabled: false,
+        allowedRoles: ["gs_admin"],
       },
-    ],
+      {
+        title: "Counsellors",
+        icon: (color?: string) => (
+          <PiUsersBold height={24} width={24} color={color || iconColor} />
+        ),
+        key: "counsellors",
+        disabled: false,
+        allowedRoles: ["partner_admin"],
+      },
+    ].filter((item) => item.allowedRoles?.includes(userRole)),
     support: [
       {
         title: "Help",
@@ -157,4 +191,22 @@ export const drawerMenuItems = (): Record<string, DrawerMenuItem[]> => {
       },
     ],
   };
+};
+
+export const emptyState = {
+  title: "No Data found",
+  subtitle: "When you add data, it will appear here.",
+  icon: (
+    <Img
+      height={118}
+      width={152}
+      alt=""
+      isLocal
+      src="/assets/icons/emptyState.png"
+    />
+  ),
+  btnProps: {
+    btnName: "Go Back",
+    icon: <FaArrowLeft size={16} className="text-white" />,
+  },
 };

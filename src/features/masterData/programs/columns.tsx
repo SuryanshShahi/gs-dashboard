@@ -6,9 +6,9 @@ import Text from "@/shared/heading/Text";
 import { ColumnDef } from "@tanstack/react-table";
 import clsx from "clsx";
 import { useLayoutEffect, useRef, type ChangeEventHandler } from "react";
+import Switcher from "@/shared/input/Switcher";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
-import { LuToggleLeft } from "react-icons/lu";
-import type { ProgramTableRow } from "./types";
+import type { IUpdateProgram, ProgramTableRow } from "./types";
 
 const CheckboxCell = ({
   checked,
@@ -80,7 +80,25 @@ const IntakesCell = ({ intakes }: { intakes: string[] }) => {
   );
 };
 
-export const programColumns: ColumnDef<ProgramTableRow, unknown>[] = [
+export const programColumns = ({
+  updateProgramMutation,
+  pendingUpdateProgramId,
+  setSelectedProgram,
+  removeProgramMutation,
+  pendingRemoveProgramId,
+}: {
+  updateProgramMutation: ({
+    programId,
+    payload,
+  }: {
+    programId: string;
+    payload: IUpdateProgram;
+  }) => void;
+  pendingUpdateProgramId: string | null;
+  setSelectedProgram: (program: ProgramTableRow) => void;
+  removeProgramMutation: ({ programId }: { programId: string }) => void;
+  pendingRemoveProgramId: string | null;
+}): ColumnDef<ProgramTableRow, unknown>[] => [
   {
     id: "select",
     size: 40,
@@ -199,33 +217,43 @@ export const programColumns: ColumnDef<ProgramTableRow, unknown>[] = [
     header: () => <div className="flex justify-end w-full">Action</div>,
     size: 120,
     enableSorting: false,
-    cell: () => (
+    cell: ({ row }) => (
       <div
-        className="flex items-center justify-end"
+        className="flex items-center justify-end gap-1"
         onClick={(e) => e.stopPropagation()}
       >
-        {[
-          {
-            icon: <FiEdit2 className="text-gray-500" />,
-            className: "hover:!bg-gray-100",
-          },
-          {
-            icon: <LuToggleLeft className="text-blue-500" />,
-            className: "hover:!bg-blue-50",
-          },
-          {
-            icon: <FiTrash2 className="text-red-500" />,
-            className: "hover:!bg-red-50",
-          },
-        ].map((item, idx) => (
-          <Button
-            key={idx}
-            variant="tertiary"
+        <Button
+          variant="tertiary"
+          size="xs"
+          className={clsx("!p-2 !rounded-md", "hover:!bg-gray-100")}
+          icon={<FiEdit2 className="text-gray-500" />}
+          onClick={() => setSelectedProgram(row.original)}
+        />
+        <div className="flex items-center px-0.5" onClick={(e) => e.stopPropagation()}>
+          <Switcher
             size="xs"
-            className={clsx("!p-2 !rounded-md", item.className)}
-            icon={item.icon}
+            checked={row.original.isActive}
+            onChange={(next) => {
+              if (next !== row.original.isActive) {
+                updateProgramMutation({
+                  programId: row.original.id,
+                  payload: { isActive: next },
+                });
+              }
+            }}
+            disabled={pendingUpdateProgramId === row.original.id}
           />
-        ))}
+        </div>
+        <Button
+          variant="tertiary"
+          size="xs"
+          className={clsx("!p-2 !rounded-md", "hover:!bg-red-50")}
+          icon={<FiTrash2 className="text-red-500" />}
+          isLoading={pendingRemoveProgramId === row.original.id}
+          onClick={() =>
+            removeProgramMutation({ programId: row.original.id })
+          }
+        />
       </div>
     ),
   },

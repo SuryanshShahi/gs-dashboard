@@ -4,16 +4,18 @@ import CardWrapper from "@/shared/cards/CardWrapper";
 import PageHeader from "@/shared/heading/PageHeader";
 import InputField from "@/shared/input/InputField";
 import DataTable from "@/shared/table/DataTable";
-import TabBar from "@/shared/tabs";
+import MenuPopover, {
+  type MenuPopoverItem,
+} from "@/shared/popover/MenuPopover";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { FiDownload, FiPlus, FiSearch } from "react-icons/fi";
+import { IoIosArrowDown } from "react-icons/io";
 import { LuFilter } from "react-icons/lu";
 import ApplicationDetailDrawer from "./ApplicationDetailDrawer";
 import { applicationColumns } from "./columns";
 import type { ApplicationRecord, ApplicationTabFilter } from "./types";
 import useHook, { applicationMatchesTab } from "./useHook";
-import clsx from "clsx";
 import Text from "@/shared/heading/Text";
 
 const STATUS_TABS: { id: ApplicationTabFilter; label: string }[] = [
@@ -48,6 +50,8 @@ const Applications = () => {
   const router = useRouter();
   const { applications, stats, isLoading, isError, error } = useHook();
   const [search, setSearch] = useState("");
+  const [activeStatusTab, setActiveStatusTab] =
+    useState<ApplicationTabFilter>("all");
   const [selected, setSelected] = useState<ApplicationRecord | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -56,27 +60,24 @@ const Applications = () => {
     setDrawerOpen(true);
   }, []);
 
-  const tabData = useMemo(
-    () =>
-      STATUS_TABS.map((t) => {
-        const rows = filteredApplications(applications, search, t.id);
-        return {
-          name: t.label,
-          component: (
-            <DataTable
-              key={t.id}
-              columns={applicationColumns}
-              data={isLoading ? [] : rows}
-              enableSelection
-              totalResults={rows.length}
-              onRowClick={handleRowClick}
-              className="flex-1 min-h-0"
-            />
-          ),
-        };
-      }),
-    [applications, search, isLoading, handleRowClick],
+  const filteredRows = useMemo(
+    () => filteredApplications(applications, search, activeStatusTab),
+    [applications, search, activeStatusTab],
   );
+
+  const statusMenuItems: MenuPopoverItem[] = useMemo(
+    () =>
+      STATUS_TABS.map((t) => ({
+        type: "item" as const,
+        id: t.id,
+        label: t.label,
+        onClick: () => setActiveStatusTab(t.id),
+      })),
+    [],
+  );
+
+  const activeStatusLabel =
+    STATUS_TABS.find((t) => t.id === activeStatusTab)?.label ?? "All";
 
   return (
     <div className="flex flex-col gap-6 h-full">
@@ -142,42 +143,68 @@ const Applications = () => {
         ))}
       </div>
 
-      <div className="relative flex-1 min-h-0 flex flex-col">
-        <TabBar
-          tabs={tabData}
-          className="flex-1 min-h-0"
-          tabContainerClassName="max-w-[400px]"
-        />
-        <div className="flex flex-wrap items-center gap-3 absolute right-0 top-0">
-          <InputField
-            type="text"
-            placeholder="Search by name, ID, partner"
-            value={search}
-            icon={<FiSearch className="text-gray-400" size={16} />}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <Button
-            variant="secondary"
-            size="sm"
-            btnName="Filter"
-            icon={<LuFilter className="w-4 h-4" />}
-          />
-          <Button
-            variant="secondary"
-            size="sm"
-            btnName="Export"
-            icon={<FiDownload className="w-4 h-4" />}
-          />
-          <Button
-            variant="primary"
-            size="sm"
-            btnName="New Application"
-            icon={<FiPlus className="w-4 h-4" />}
-            onClick={() =>
-              router.push("/onboarding/application/select-student")
-            }
-          />
+      <div className="flex flex-1 min-h-0 flex-col gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <MenuPopover items={statusMenuItems} anchor="bottom start">
+            <Button
+              variant="secondary"
+              size="sm"
+              children={
+                <>
+                  <Text as="span" size="sm" variant="secondary">
+                    Status:
+                  </Text>
+                  <Text as="span" size="sm" variant="primary">
+                    {activeStatusLabel}
+                  </Text>
+                </>
+              }
+              secondaryIcon={
+                <IoIosArrowDown className="h-4 w-4 text-gray-400 shrink-0 order-last" />
+              }
+            />
+          </MenuPopover>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <InputField
+              type="text"
+              placeholder="Search by name, ID, partner"
+              value={search}
+              icon={<FiSearch className="text-gray-400" size={16} />}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <Button
+              variant="secondary"
+              size="sm"
+              btnName="Filter"
+              icon={<LuFilter className="w-4 h-4" />}
+            />
+            <Button
+              variant="secondary"
+              size="sm"
+              btnName="Export"
+              icon={<FiDownload className="w-4 h-4" />}
+            />
+            <Button
+              variant="primary"
+              size="sm"
+              btnName="New Application"
+              icon={<FiPlus className="w-4 h-4" />}
+              onClick={() =>
+                router.push("/onboarding/application/select-student")
+              }
+            />
+          </div>
         </div>
+
+        <DataTable
+          columns={applicationColumns}
+          data={isLoading ? [] : filteredRows}
+          enableSelection
+          totalResults={filteredRows.length}
+          onRowClick={handleRowClick}
+          className="flex-1 min-h-0"
+        />
       </div>
 
       <ApplicationDetailDrawer

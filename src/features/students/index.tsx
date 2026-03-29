@@ -5,15 +5,26 @@ import InputField from "@/shared/input/InputField";
 import DataTable from "@/shared/table/DataTable";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FiDownload, FiPlus, FiSearch } from "react-icons/fi";
+import { FiDownload, FiPlus, FiSearch, FiUser } from "react-icons/fi";
 import { LuFilter } from "react-icons/lu";
 import { studentColumns } from "./sections/columns";
 import StudentDetailDrawer from "./sections/StudentDetailDrawer";
 import type { IStudent, StudentTableRow } from "./types";
 import useHook from "./useHook";
+import EmptyState from "@/shared/EmptyState";
 
 const Students = () => {
-  const { students, tableRows, isLoading, isError, error } = useHook();
+  const {
+    students,
+    tableRows,
+    isLoading,
+    isError,
+    error,
+    onArchiveStudent,
+    isArchiveStudentLoading,
+    onActivateStudent,
+    isActivateStudentLoading,
+  } = useHook();
   const [search, setSearch] = useState("");
   const [selectedStudent, setSelectedStudent] = useState<IStudent | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -42,8 +53,7 @@ const Students = () => {
           children: "Student",
         }}
         descriptionProps={{
-          children:
-            "Track tasks efficiently and collaborate with your team.",
+          children: "Track tasks efficiently and collaborate with your team.",
         }}
       />
 
@@ -52,9 +62,7 @@ const Students = () => {
           {error instanceof Error ? error.message : "Failed to load students."}
         </p>
       )}
-      {isLoading && (
-        <p className="text-sm text-gray-500">Loading students…</p>
-      )}
+      {isLoading && <p className="text-sm text-gray-500">Loading students…</p>}
 
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3">
@@ -88,15 +96,28 @@ const Students = () => {
           />
         </div>
       </div>
-
-      <DataTable
-        columns={studentColumns}
-        data={isLoading ? [] : filteredData}
-        enableSelection
-        totalResults={filteredData.length}
-        onRowClick={handleRowClick}
-        className="flex-1 min-h-0"
-      />
+      <EmptyState
+        pageData={isLoading ? null : filteredData}
+        loaderVariant="full-screen"
+        data={{
+          title: "No students found",
+          subtitle: "When you add students, they will appear here.",
+        }}
+      >
+        <DataTable
+          columns={studentColumns({
+            onArchiveStudent,
+            isArchiveStudentLoading,
+            onActivateStudent,
+            isActivateStudentLoading,
+          })}
+          data={filteredData}
+          enableSelection
+          totalResults={filteredData.length}
+          onRowClick={handleRowClick}
+          className="flex-1 min-h-0"
+        />
+      </EmptyState>
 
       <StudentDetailDrawer
         student={selectedStudent}

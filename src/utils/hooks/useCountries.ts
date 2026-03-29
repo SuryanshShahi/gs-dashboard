@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 const useCountries = ({ country, state }: { country?: string, state?: string }) => {
-    const { data: countries } = useQuery<ICountry[]>({
+    const { data: countries, isLoading: isLoadingCountries } = useQuery<ICountry[]>({
         queryKey: ["countries"],
         queryFn: getCountries,
     });
@@ -21,23 +21,23 @@ const useCountries = ({ country, state }: { country?: string, state?: string }) 
     const countriesOptions = useMemo(() => {
         return countries?.map((country) => ({
             label: country.name,
-            value: country.id,
+            value: String(country.id),
         }));
     }, [countries]);
     const statesOptions = useMemo(() => {
         return states?.map((state) => ({
             label: state.name,
-            value: state.id,
+            value: String(state.id),
         }));
     }, [states]);
     const citiesOptions = useMemo(() => {
         return cities?.map((city) => ({
             label: city.name,
-            value: city.id,
+            value: String(city.id),
         }));
     }, [cities]);
 
-    return { countriesOptions, statesOptions, citiesOptions };
+    return { countriesOptions, statesOptions, citiesOptions ,isLoadingCountries};
 }
 
 export default useCountries

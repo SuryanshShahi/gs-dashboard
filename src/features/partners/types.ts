@@ -45,6 +45,18 @@ export interface IPartner {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  assignedRm: IPartnerAssignedRm;
+  assignedRm?: IPartnerAssignedRm | null;
   _count: IPartnerCounts;
+}
+
+/** One row in the partners DataTable (mapped from `IPartner`). */
+export interface Partner {
+  id: string;
+  name: string;
+  logo: string;
+  location: string;
+  activeStudents: number;
+  applications: number;
+  pendingApplications: number | null;
+  relationshipManager: { name: string; avatar: string } | null;
 }

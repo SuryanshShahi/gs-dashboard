@@ -34,11 +34,17 @@ export const studentPersonalSchema = Yup.object({
   pincode: Yup.string()
     .matches(/^[0-9]{5,10}$/, "Please enter a valid pincode")
     .required(ErrorMessage.REQUIRED),
-  profilePhoto: Yup.mixed().test(
-    "is-file-or-persisted",
-    ErrorMessage.REQUIRED,
-    (val) => val instanceof File || hasPersistedStudentProfilePhoto(),
-  ),
+  profilePhoto: Yup.mixed()
+    .nullable()
+    .test(
+      "is-file-or-persisted-or-optional",
+      "Please upload a valid image (JPEG or PNG).",
+      (val) => {
+        if (val === null || val === undefined) return true;
+        if (val instanceof File) return true;
+        return hasPersistedStudentProfilePhoto();
+      },
+    ),
 });
 
 export const studentPassportSchema = Yup.object({

@@ -1,8 +1,7 @@
 import { getPartners } from "@/apis/apis";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import type { Partner } from "./mockData";
-import type { IPartner, IPartnerResponse } from "./types";
+import type { IPartner, IPartnerResponse, Partner } from "./types";
 
 function humanizeSlug(value: string): string {
   if (!value) return "";

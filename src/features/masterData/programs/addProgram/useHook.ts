@@ -1,4 +1,4 @@
-import { addProgram, getUniversities } from "@/apis/apis";
+import { addProgram, getUniversities, updateProgram } from "@/apis/apis";
 import type { IAddProgram } from "@/apis/types";
 import type { IDropdown } from "@/shared/input/Dropdown";
 import type { IInputField } from "@/shared/input/InputField";
@@ -6,6 +6,8 @@ import { showToast } from "@/shared/ToastMessage";
 import { addProgramSchema } from "@/utils/schemas/masterData";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useFormik } from "formik";
+import { useMemo, useRef } from "react";
+import type { IUpdateProgram, ProgramTableRow } from "../types";
 
 export type AddProgramFormValues = {
   name: string;
@@ -27,7 +29,7 @@ export type AddProgramInputField =
   } & Omit<IDropdown, "options" | "type">)
   | ({ className: string } & IInputField);
 
-const initialValues: AddProgramFormValues = {
+const defaultFormValues: AddProgramFormValues = {
   name: "",
   universityId: "",
   level: "",
@@ -38,20 +40,45 @@ const initialValues: AddProgramFormValues = {
   status: "ACTIVE",
 };
 
-const useHook = ({ close }: { close: () => void }) => {
+const useHook = ({
+  close,
+  selectedProgram,
+}: {
+  close: () => void;
+  selectedProgram: ProgramTableRow | null;
+}) => {
   const queryClient = useQueryClient();
+  const formikRef = useRef<ReturnType<typeof useFormik<AddProgramFormValues>> | null>(
+    null,
+  );
 
   const { data: universities } = useQuery<
-    { id: string; name: string; country?: string }[]
+    { id: string; name: string; country?: { name: string } }[]
   >({
     queryKey: ["universities"],
     queryFn: getUniversities,
   });
 
+  const formInitialValues = useMemo<AddProgramFormValues>(() => {
+    if (!selectedProgram) {
+      return { ...defaultFormValues };
+    }
+    return {
+      name: selectedProgram.name,
+      universityId: selectedProgram.universityId,
+      level: selectedProgram.category,
+      studyMode: selectedProgram.studyMode,
+      duration: selectedProgram.duration,
+      tuitionFee: selectedProgram.tuitionFee,
+      intakes: selectedProgram.intakes.join(", "),
+      status: selectedProgram.status,
+    };
+  }, [selectedProgram]);
+
   const { mutate: addProgramMutation, isPending } = useMutation({
     mutationFn: (payload: IAddProgram) => addProgram(payload),
     onSuccess: () => {
-      formik.resetForm();
+      formikRef.current?.resetForm();
       queryClient.invalidateQueries({ queryKey: ["programs"] });
       showToast({
         type: "success",
@@ -68,8 +95,38 @@ const useHook = ({ close }: { close: () => void }) => {
     },
   });
 
+  const {
+    mutate: updateProgramMutation,
+    isPending: isUpdateProgramPending,
+  } = useMutation({
+    mutationFn: ({
+      programId,
+      payload,
+    }: {
+      programId: string;
+      payload: IUpdateProgram;
+    }) => updateProgram(programId, payload),
+    onSuccess: () => {
+      formikRef.current?.resetForm();
+      queryClient.invalidateQueries({ queryKey: ["programs"] });
+      showToast({
+        type: "success",
+        title: "Program updated successfully.",
+      });
+      close();
+    },
+    onError: (err: any) => {
+      showToast({
+        type: "error",
+        title: "Something went wrong!",
+        subtitle: err?.response?.data?.message,
+      });
+    },
+  });
+
   const formik = useFormik<AddProgramFormValues>({
-    initialValues,
+    initialValues: formInitialValues,
+    enableReinitialize: true,
     validationSchema: addProgramSchema,
     validateOnMount: true,
     onSubmit: (values) => {
@@ -80,23 +137,46 @@ const useHook = ({ close }: { close: () => void }) => {
       const duration = String(values.duration ?? "").trim();
       const tuitionFee = String(values.tuitionFee ?? "").trim();
       const intakesValue = String(values.intakes ?? "");
+      const intakes = intakesValue
+        .split(",")
+        .map((v) => v.trim())
+        .filter(Boolean);
 
-      addProgramMutation({
-        name,
-        universityId,
-        level,
-        studyMode,
-        duration: duration || undefined,
-        tuitionFee,
-        currency: "GBP",
-        intakes: intakesValue
-          .split(",")
-          .map((v) => v.trim())
-          .filter(Boolean),
-        isActive: values.status === "ACTIVE",
-      });
+      const currency = selectedProgram?.currency?.trim() || "GBP";
+
+      if (selectedProgram) {
+        const payload: IUpdateProgram = {
+          name,
+          universityId,
+          level,
+          studyMode,
+          duration: duration || undefined,
+          tuitionFee,
+          currency,
+          intakes: intakes.length ? intakes : undefined,
+          isActive: values.status === "ACTIVE",
+        };
+        updateProgramMutation({
+          programId: selectedProgram.id,
+          payload,
+        });
+      } else {
+        addProgramMutation({
+          name,
+          universityId,
+          level,
+          studyMode,
+          duration: duration || undefined,
+          tuitionFee,
+          currency,
+          intakes,
+          isActive: values.status === "ACTIVE",
+        });
+      }
     },
   });
+
+  formikRef.current = formik;
 
   const showError = (field: keyof AddProgramFormValues) =>
     formik.errors[field] && (formik.touched[field] || formik.submitCount > 0)
@@ -107,7 +187,7 @@ const useHook = ({ close }: { close: () => void }) => {
 
   const universityOptions =
     universities?.map((u) => ({
-      label: u.country ? `${u.name} (${u.country})` : u.name,
+      label: u.country ? `${u.name} (${u.country?.name})` : u.name,
       value: u.id,
     })) ?? [];
 
@@ -235,8 +315,8 @@ const useHook = ({ close }: { close: () => void }) => {
     isSubmitDisabled,
     resetForm: formik.resetForm,
     isPending,
+    isUpdateProgramPending,
   };
 };
 
 export default useHook;
-

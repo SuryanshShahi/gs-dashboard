@@ -98,7 +98,7 @@ const Button = ({
         },
         className,
       )}
-      form={form}
+      {...(form ? { form } : {})}
       type={type}
       onClick={handleClick}
       role="button"
